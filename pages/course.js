@@ -4,21 +4,21 @@ import ScriptTag from './script-tag';
 import Navbar from '../components/Navbar';
 import SideBar from '../components/SideBar';
 import Footer from '../components/Footer';
-import Dashboard from '../components/Dashboard';
+import FormCourse from '../components/course/FormCourse';
 
-export default class Home extends React.Component {
+export default class Course extends React.Component {
 
 render() {
   return(
     <div>
         <HeadTag>
-          <title>Guru Ahli : Home</title>
+          <title>Guru Ahli : Course</title>
           <link rel="icon" href="/favicon.ico" />
         </HeadTag>
         <div className="wrapper">
           <Navbar />
           <SideBar />
-          <Dashboard />
+          <FormCourse />
           <Footer />
         </div>
         <ScriptTag />

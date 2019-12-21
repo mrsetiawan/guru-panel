@@ -1,82 +1,92 @@
 import React from 'react';
-import Head from 'next/head';
+import HeadTag from './head-tag';
+import ScriptTag from './script-tag';
+import { onLogin } from '../controllers/auth';
+import Router from 'next/router'
 
 export default class Login extends React.Component {
+
+  state = {
+    identifier: "",
+    password: ""
+  }
+
+  onSubmitForm = (ev) =>  {
+    ev.preventDefault();
+
+    onLogin(this.state)
+          .then(res => res.data)
+          .then(data => {
+            Router.push("/");
+            console.log(data);
+          })
+    
+
+  }
+
     render(){
         return(
             <div className="hold-transition login-page">
-                <Head>
+              <HeadTag>
                 <title>Guru Panel : Login</title>
                 <link rel="icon" href="/favicon.ico" />
-                <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css" />
                 <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
-                <link rel="stylesheet" href="/dist/css/adminlte.min.css" />
-                <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet" />
-                </Head>
-
+              </HeadTag>
                 <div className="login-box">
-  <div className="login-logo">
-    <a href="../../index2.html"><b>Guru Ahli</b></a>
-  </div>
-  <div className="card">
-    <div className="card-body login-card-body">
-      <p className="login-box-msg">Sign in to start your session</p>
+                  <div className="login-logo">
+                    <a href="../../index2.html"><b>Guru Ahli</b></a>
+                  </div>
+                  <div className="card">
+                    <div className="card-body login-card-body">
+                      <p className="login-box-msg">Sign in to start your session</p>
 
-      <form action="../../index3.html" method="post">
-        <div className="input-group mb-3">
-          <input type="email" className="form-control" placeholder="Email" />
-          <div className="input-group-append">
-            <div className="input-group-text">
-              <span className="fas fa-envelope"></span>
-            </div>
-          </div>
-        </div>
-        <div className="input-group mb-3">
-          <input type="password" className="form-control" placeholder="Password" />
-          <div className="input-group-append">
-            <div className="input-group-text">
-              <span className="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-8">
-            <div className="icheck-primary">
-              <input type="checkbox" id="remember" />
-              <label htmlFor="remember">
-                Remember Me
-              </label>
-            </div>
-          </div>
-          <div className="col-4">
-            <button type="submit" className="btn btn-primary btn-block">Sign In</button>
-          </div>
-        </div>
-      </form>
+                      <form onSubmit={this.onSubmitForm}>
+                        <div className="input-group mb-3">
+                          <input type="text" 
+                                  className="form-control" 
+                                  placeholder="Email"
+                                  onChange={({target}) => (this.setState({ identifier: target.value }) )}  />
+                          <div className="input-group-append">
+                            <div className="input-group-text">
+                              <span className="fas fa-envelope"></span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="input-group mb-3">
+                          <input type="password" 
+                                  className="form-control" 
+                                  placeholder="Password" 
+                                  onChange={({target}) => (this.setState({ password: target.value }) )} />
+                          <div className="input-group-append">
+                            <div className="input-group-text">
+                              <span className="fas fa-lock"></span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="row">
+                          <div className="col-8">
+                            <div className="icheck-primary">
+                              <input type="checkbox" id="remember" />
+                              <label htmlFor="remember">
+                                Remember Me
+                              </label>
+                            </div>
+                          </div>
+                          <div className="col-4">
+                            <button type="submit" className="btn btn-primary btn-block">Sign In</button>
+                          </div>
+                        </div>
+                      </form>
+                      
+                      <p className="mb-1">
+                        <a href="#">I forgot my password</a>
+                      </p>
 
-      <div className="social-auth-links text-center mb-3">
-        <p>- OR -</p>
-        <a href="#" className="btn btn-block btn-primary">
-          <i className="fab fa-facebook mr-2"></i> Sign in using Facebook
-        </a>
-        <a href="#" className="btn btn-block btn-danger">
-          <i className="fab fa-google-plus mr-2"></i> Sign in using Google+
-        </a>
-      </div>
+                    </div>
+                  </div>
+                </div>
 
-      <p className="mb-1">
-        <a href="forgot-password.html">I forgot my password</a>
-      </p>
-      <p className="mb-0">
-        <a href="register.html" className="text-center">Register a new membership</a>
-      </p>
-    </div>
-  </div>
-</div>
-
-                <script src="/plugins/jquery/jquery.min.js"></script>
-                <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-                <script src="/dist/js/adminlte.min.js"></script>
+                <ScriptTag />
             </div>)
     }
 }

@@ -1,22 +1,30 @@
 import React from 'react';
 import HeadTag from './head-tag';
 import ScriptTag from './script-tag';
-import { onLogin } from '../controllers/auth';
+
 import Router from 'next/router'
 
 export default class Login extends React.Component {
+
+  authController;
 
   state = {
     identifier: "",
     password: ""
   }
 
+  componentDidMount(){
+    const Auth = require('../controllers/auth').default;
+    this.authController = new Auth;
+  }
+
   onSubmitForm = (ev) =>  {
     ev.preventDefault();
 
-    onLogin(this.state)
+    this.authController.onLogin(this.state.identifier, this.state.password)
           .then(res => res.data)
           .then(data => {
+            localStorage.setItem("jwt",  data.jwt);
             Router.push("/");
             console.log(data);
           })

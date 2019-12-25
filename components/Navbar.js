@@ -1,7 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
 
-const Navbar = () => {
+class Navbar extends React.Component {
+
+  onLogOut()
+  {
+    localStorage.clear()
+  }
+
+  render()
+  {
 
     return(<nav className="main-header navbar navbar-expand navbar-white navbar-light">
     <ul className="navbar-nav">
@@ -33,8 +41,8 @@ const Navbar = () => {
           <a href="#" className="dropdown-item">
             <i className="fas fa-user mr-2"></i>Profile</a>
             <div className="dropdown-divider"></div>
-              <Link href="/login">
-                <a href="#" className="dropdown-item">
+              <Link href="/login" >
+                <a href="#" className="dropdown-item" onClick={this.onLogOut}>
                   <i className="fas fa-sign-out-alt mr-2"></i>Logout
                 </a>
               </Link>
@@ -44,7 +52,7 @@ const Navbar = () => {
         
      </ul>
   </nav>)
-
+  }
 }
 
 export default Navbar;

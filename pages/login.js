@@ -1,30 +1,34 @@
 import React from 'react';
-import HeadTag from './head-tag';
-import ScriptTag from './script-tag';
-
 import Router from 'next/router'
+import dynamic from 'next/dynamic';
+import Layout from '../components/Layout';
+const AuthController  = require('../controllers/auth').default;
+
+const headTag = () => (<>
+  <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
+</>);
+
 
 export default class Login extends React.Component {
 
-  authController;
-
+  authController; 
   state = {
     identifier: "",
     password: ""
   }
 
   componentDidMount(){
-    const Auth = require('../controllers/auth').default;
-    this.authController = new Auth;
+    this.authController = new AuthController();
   }
 
   onSubmitForm = (ev) =>  {
     ev.preventDefault();
-
+    
+    console.log('auth', this.authController)
     this.authController.onLogin(this.state.identifier, this.state.password)
           .then(res => res.data)
           .then(data => {
-            localStorage.setItem("jwt",  data.jwt);
+            localStorage.setItem("jwtToken",  data.jwt);
             Router.push("/");
             console.log(data);
           })
@@ -34,15 +38,11 @@ export default class Login extends React.Component {
 
     render(){
         return(
+          <Layout title="Guru Ahli : Login Page" headTag={headTag} >
             <div className="hold-transition login-page">
-              <HeadTag>
-                <title>Guru Panel : Login</title>
-                <link rel="icon" href="/favicon.ico" />
-                <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
-              </HeadTag>
                 <div className="login-box">
                   <div className="login-logo">
-                    <a href="../../index2.html"><b>Guru Ahli</b></a>
+                    <b>Guru Ahli</b>
                   </div>
                   <div className="card">
                     <div className="card-body login-card-body">
@@ -93,8 +93,7 @@ export default class Login extends React.Component {
                     </div>
                   </div>
                 </div>
-
-                <ScriptTag />
-            </div>)
+            </div>
+            </Layout>)
     }
 }

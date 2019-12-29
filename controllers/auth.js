@@ -22,3 +22,4 @@ class Auth extends ControllerBase {
 
 
 export default Auth;
+

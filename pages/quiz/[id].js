@@ -1,6 +1,6 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/router'
+import { withRouter } from 'next/router'
 import { QuizModel } from '../../model/QuizModel';
 const QuizzController =  require('../../controllers/quiz').default;
 const Layout = dynamic(import('../../components/Layout'));
@@ -12,41 +12,44 @@ const headTag = () => (<>
   <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
 </>);
 
-const FormEntry = () => {
+class FormEntry extends React.Component {
 
-  let quizController;
-  const [state, setState ] = React.useState({...QuizModel})
-  const { query: {id} } = useRouter()
-
+  quizController;
+  router;
+  state = {...QuizModel}
   
-  React.useEffect(() => {
+  componentDidMount(){
     CKEDITOR.replace('editorQuizz', {
         extraPlugins: 'mathjax',
         mathJaxLib: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
         height: 320
       });
 
-   
-    quizController = new QuizzController();
+      
+    this.quizController = new QuizzController();
+    console.log(this.props)
+    const { query: {id} } = this.props.router;
     if(id !== "form-entry" && id !== undefined){
-      quizController.onGetById(id)
+      this.quizController.onGetById(id)
       .then(res => res.data)
-      .then(quiz => setState({...quiz}))
+      .then(quiz => this.setState({...quiz}))
     }
 
-  }, [id])
+  }
 
-  const onSaveQuizz = () => {
-    console.log(this)
-    quizController.onInsert(state)
+  
+
+  onSaveQuizz = () => {
+    this.quizController.onInsert(state)
           .then(res => console.log(res))
   }
 
-  const onResetForm = () => {
-    setState({...QuizModel})
+  onResetForm = () => {
+    this.setState({...QuizModel})
   }
 
 
+  render(){
     return (
       <Layout title="Guru Ahli : Quizz" headTag={headTag} >
         <div className="wrapper">
@@ -59,8 +62,8 @@ const FormEntry = () => {
                   <div className="col d-flex align-items-center justify-content-between">
                     <h1 className="m-0 text-dark">Create A Quizz</h1>
                     <div className="d-flex col-md-3">
-                      <a href="#" onClick={onResetForm} className="btn btn-sm btn-default col">Reset</a> &nbsp;&nbsp;
-                      <a href="#" onClick={onSaveQuizz} className="btn btn-sm btn-primary col" style={{ width: "150px" }}>Save</a>
+                      <a href="#" onClick={this.onResetForm} className="btn btn-sm btn-default col">Reset</a> &nbsp;&nbsp;
+                      <a href="#" onClick={this.onSaveQuizz} className="btn btn-sm btn-primary col" style={{ width: "150px" }}>Save</a>
                     </div>
                   </div>
                 </div>
@@ -75,8 +78,8 @@ const FormEntry = () => {
                         <div className="form-group">
                           <label htmlFor="inputQuizzName">Quizz Name</label>
                           <input 
-                            value={state.quizName}
-                            onChange={({ target }) => setState({quizName: target.value })}
+                            value={this.state.quizName}
+                            onChange={({ target }) => this.setState({quizName: target.value })}
                             type="text" 
                             className="form-control col-lg-6" 
                             id="inputQuizzName" 
@@ -96,8 +99,8 @@ const FormEntry = () => {
                         <div className="form-group col-4">
                           <label htmlFor="inputCapacity">Capacity</label>
                           <input 
-                            value={state.capacity}
-                            onChange={({ target }) => setState({capacity: target.value })}
+                            value={this.state.capacity}
+                            onChange={({ target }) => this.setState({capacity: target.value })}
                             type="number" 
                             className="form-control" 
                             id="inputCapacity" 
@@ -106,8 +109,8 @@ const FormEntry = () => {
                         <div className="form-group col-4">
                           <label htmlFor="inputDurationMinute">Duration Minute</label>
                           <input 
-                            value={state.durationMinute}
-                            onChange={({ target }) => setState({durationMinute: target.value })}
+                            value={this.state.durationMinute}
+                            onChange={({ target }) => this.setState({durationMinute: target.value })}
                             type="number" 
                             className="form-control" 
                             id="inputDurationMinute" 
@@ -116,8 +119,8 @@ const FormEntry = () => {
                         <div className="form-group col-4">
                           <label htmlFor="inputTotalQuestions">Total Questions</label>
                           <input 
-                            value={state.totalQuestions}
-                            onChange={({ target }) => setState({totalQuestions: target.value })}
+                            value={this.state.totalQuestions}
+                            onChange={({ target }) => this.setState({totalQuestions: target.value })}
                             type="number" 
                             className="form-control" 
                             id="inputTotalQuestions" 
@@ -127,8 +130,8 @@ const FormEntry = () => {
                       <div className="mb-3">
                         <div className="icheck-primary">
                           <input 
-                            value={state.quizStatus}
-                            onChange={({ target }) => setState({quizStatus: target.value })}
+                            value={this.state.quizStatus}
+                            onChange={({ target }) => this.setState({quizStatus: target.value })}
                             type="checkbox" 
                             id="remember" />
                           <label htmlFor="remember">
@@ -178,6 +181,7 @@ const FormEntry = () => {
     )
 }
 
+}
 
 // FormEntry.getInitialProps = () => {
 // let quiz = {...QuizModel};
@@ -193,6 +197,6 @@ const FormEntry = () => {
 //   return { quiz }
 // }
 
-export default FormEntry;
+export default withRouter(FormEntry);
 
 

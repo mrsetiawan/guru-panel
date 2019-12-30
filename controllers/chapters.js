@@ -1,8 +1,9 @@
-const { apiEndPoint } = require('./config')
-const axios = require('axios')
+import ControllerBase from './ControllerBase'
 
-module.exports = {
-    index: () => {
-        return axios.get(apiEndPoint + 'chapters')
+class chapters extends ControllerBase {
+    index = () => {
+        return this.axios.get('chapters')
     }
 }
+
+export default chapters

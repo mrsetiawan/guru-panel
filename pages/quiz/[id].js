@@ -16,18 +16,28 @@ const FormEntry = () => {
 
   let quizController;
   const [state, setState ] = React.useState({...QuizModel})
+  const { query: {id} } = useRouter()
 
-  if(typeof window !== "undefined"){
-    // CKEDITOR.replace('editorQuizz', {
-    //   extraPlugins: 'mathjax',
-    //   mathJaxLib: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
-    //   height: 320
-    // });
-  }
-    
   
+  React.useEffect(() => {
+    CKEDITOR.replace('editorQuizz', {
+        extraPlugins: 'mathjax',
+        mathJaxLib: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
+        height: 320
+      });
+
+   
+    quizController = new QuizzController();
+    if(id !== "form-entry" && id !== undefined){
+      quizController.onGetById(id)
+      .then(res => res.data)
+      .then(quiz => setState({...quiz}))
+    }
+
+  }, [id])
 
   const onSaveQuizz = () => {
+    console.log(this)
     quizController.onInsert(state)
           .then(res => console.log(res))
   }
@@ -74,12 +84,12 @@ const FormEntry = () => {
                         </div>
                         <div className="form-group">
                           <label>Quizz Name</label>
-                          <textarea 
+                          {/* <textarea 
                             
                             onChange={({ target }) => setState({description: target.value })}
                             cols="10" 
                             id="editorQuizz" 
-                            name="editorQuizz" rows="10" data-sample-short></textarea>
+                            name="editorQuizz" rows="10" data-sample-short></textarea> */}
                         </div>
                       </div>
                       <div className="mb-3 row">
@@ -169,19 +179,19 @@ const FormEntry = () => {
 }
 
 
-FormEntry.getInitialProps = () => {
-let quiz = {...QuizModel};
-let quizController;
-  const { query: {id} } = useRouter()
-    quizController = new QuizzController();
-    if(id !== "form-entry" && id !== "undefined"){
-      quizController.onGetById(id)
-      .then(res => res.data)
-      .then(q => quiz = q)
-    }
+// FormEntry.getInitialProps = () => {
+// let quiz = {...QuizModel};
+// let quizController;
+//   const { query: {id} } = useRouter()
+//     quizController = new QuizzController();
+//     if(id !== "form-entry" && id !== "undefined"){
+//       quizController.onGetById(id)
+//       .then(res => res.data)
+//       .then(q => quiz = q)
+//     }
     
-  return { quiz }
-}
+//   return { quiz }
+// }
 
 export default FormEntry;
 

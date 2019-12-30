@@ -85,7 +85,7 @@ export default class ListQuizz extends React.Component {
                           </tr>
                         </thead>
                         <tbody>
-                          {this.state.quizzes.map(quizz => <TrQuizz quizz={quizz} onDelete={this.onDeleteQuiz} />)}
+                          {this.state.quizzes.map((quizz, key) => <TrQuizz key={key} quizz={quizz} onDelete={this.onDeleteQuiz} />)}
                         </tbody>
                       </table>
                 </div>

@@ -49,7 +49,7 @@ render() {
             </div>
             <div className="card-body pad">
               <div className="mb-3">
-              <textarea cols="10" id="editorQuizz" name="editor1" rows="10" data-sample-short></textarea>
+              {/* <textarea cols="10" id="editorQuizz" name="editor1" rows="10" data-sample-short></textarea> */}
               </div>
             </div>
           </div>

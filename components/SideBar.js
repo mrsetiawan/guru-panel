@@ -23,7 +23,7 @@ const SideBar = () => {
             </Link>
           </li>
           <li className="nav-item">
-          <Link href="/quiz/" as="/quiz/list">
+          <Link href="/quiz/list">
             <a href="" className="nav-link">
               <i className="nav-icon fas fa-th"></i>
               <p>

@@ -1,41 +1,35 @@
 import React from 'react';
-import Head from 'next/head';
+import HeadTag from '../pages/head-tag';
+import ScriptTag from '../pages/script-tag';
+import Navbar from './Navbar';
+import SideBar from './SideBar';
+import Footer from './Footer';
 import Router from 'next/router';
 
 class Layout extends React.Component{
 
   componentDidMount(){
-    const jwt = localStorage.getItem("jwtToken");
+    const jwt = localStorage.getItem("jwt");
     if(jwt === null) {
       Router.push("/login");
     }
   }
 
   render(){
-    const {
-        children, 
-        title = "Guru Ahli", 
-        headTag = () => (null), 
-        scriptTag = () => (null) 
-      } = this.props;
-      
+    const {children, title} = this.props;
       return(
           <>
-              <Head>
+              <HeadTag>
                 <title>{title}</title>
                 <link rel="icon" href="/favicon.ico" />
-                <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css" />
-                <link rel="stylesheet" href="/dist/css/adminlte.min.css" />
-                <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet" />
-                {headTag()}
-              </Head>
+              </HeadTag>
+              <div className="wrapper">
+                <Navbar />
+                <SideBar />
                 {children}
-             
-              <script src="/plugins/jquery/jquery.min.js"></script>
-              <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-              <script src="/dist/js/adminlte.min.js"></script>
-              <script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
-              {scriptTag()}
+                <Footer />
+              </div>
+              <ScriptTag />
           </>
           )
     }

@@ -1,16 +1,23 @@
+const { apiEndPoint } = require('./config')
+const axios = require('axios')
 
-import ControllerBase from './ControllerBase';
+class Auth {
+    apiEndPoint = apiEndPoint;
+    axios;
 
-class Auth extends ControllerBase {
+    constructor() {
+        this.axios = axios.create({
+            baseURL: this.apiEndPoint
+        });
+    }
 
     onLogin = (username, password) => {
-        console.log(username)
-        return this.axios.post('admin/auth/local', {
+        return this.axios.post('auth/local', {
             identifier: username,
             password: password,
         })
     }
-    
+
     onRegister = (username, email, password) => {
         return axios.post(apiEndPoint + 'auth/local/register', {
             username: username,
@@ -22,4 +29,3 @@ class Auth extends ControllerBase {
 
 
 export default Auth;
-

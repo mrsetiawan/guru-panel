@@ -55,9 +55,7 @@ export default class ListQuizz extends React.Component {
   render() {
     return (
       <Layout title="Guru Ahli : Quizz">
-        <div className="wrapper">
-          <Navbar />
-          <SideBar />
+       
           <div className="content-wrapper">
             <div className="content-header">
               <div className="container-fluid">
@@ -92,8 +90,7 @@ export default class ListQuizz extends React.Component {
               </div>
             </div>
           </div>
-          <Footer />
-        </div>
+        
       </Layout>
     )
   }

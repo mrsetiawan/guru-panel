@@ -52,9 +52,7 @@ class FormEntry extends React.Component {
   render(){
     return (
       <Layout title="Guru Ahli : Quizz" headTag={headTag} >
-        <div className="wrapper">
-          <Navbar />
-          <SideBar />
+       
           <div className="content-wrapper">
             <div className="content-header">
               <div className="container-fluid">
@@ -87,12 +85,12 @@ class FormEntry extends React.Component {
                         </div>
                         <div className="form-group">
                           <label>Quizz Name</label>
-                          {/* <textarea 
+                          <textarea 
                             
                             onChange={({ target }) => setState({description: target.value })}
                             cols="10" 
                             id="editorQuizz" 
-                            name="editorQuizz" rows="10" data-sample-short></textarea> */}
+                            name="editorQuizz" rows="10" data-sample-short></textarea>
                         </div>
                       </div>
                       <div className="mb-3 row">
@@ -175,8 +173,7 @@ class FormEntry extends React.Component {
               </div>
             </div>
           </div>
-          <Footer />
-        </div>
+         
       </Layout>
     )
 }

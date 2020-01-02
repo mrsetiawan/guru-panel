@@ -1,10 +1,14 @@
 import ControllerBase from './ControllerBase';
-import { ProvinceModel } from '../model/GradeModel';
+import { ProvinceModel } from '../model/ProvinceModel';
 
 class Provinces extends ControllerBase {
 
     onInsert = (province = ProvinceModel) => {
         return this.axios.post('provinces', province)
+    }
+
+    onUpdate = (province = ProvinceModel) => {
+        return this.axios.put('provinces/'+ province.id, province)
     }
 
     getList = () => {

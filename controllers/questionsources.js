@@ -7,6 +7,10 @@ class Questionsources extends ControllerBase {
         return this.axios.post('questionsources', questionsource)
     }
 
+    onUpdate = (questionsource = QuestionsourceModel) => {
+        return this.axios.put('questionsources/'+ questionsource.id, questionsource)
+    }
+
     getList = () => {
         return this.axios.get('questionsources')
     }

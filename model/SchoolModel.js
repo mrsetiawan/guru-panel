@@ -1,4 +1,5 @@
 export const SchoolModel = {
+    id: "",
     schoolName: "",
     schoolEmail: "",
     schoolPassword: "",

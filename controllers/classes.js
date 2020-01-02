@@ -7,6 +7,10 @@ class Classes extends ControllerBase {
         return this.axios.post('classes', classes)
     }
 
+    onUpdate = (classes = ClassModel) => {
+        return this.axios.put('classes/'+ classes.id, classes)
+    }
+
     getList = () => {
         return this.axios.get('classes')
     }

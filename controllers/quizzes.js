@@ -7,6 +7,10 @@ class Quiz extends ControllerBase {
         return this.axios.post('quizzes', quizz)
     }
 
+    onUpdate = (quizz = QuizModel) => {
+        return this.axios.put('quizzes/'+ quizz.id, quizz)
+    }
+
     getList = () => {
         return this.axios.get('quizzes')
     }

@@ -7,6 +7,10 @@ class chapters extends ControllerBase {
         return this.axios.post('chapters', chapter)
     }
 
+    onUpdate = (chapter = ChapterModel) => {
+        return this.axios.put('chapters/'+ chapter.id, chapter)
+    }
+
     getList = () => {
         return this.axios.get('chapters')
     }

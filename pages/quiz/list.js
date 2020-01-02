@@ -1,7 +1,7 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-const QuizzController =  require('../../controllers/quiz').default;
+const QuizzController =  require('../../controllers/quizzes').default;
 const Layout = dynamic(import('../../components/Layout'));
 const Navbar = dynamic(import('../../components/Navbar'));
 const SideBar = dynamic(import('../../components/SideBar'));
@@ -32,7 +32,7 @@ export default class ListQuizz extends React.Component {
 
   componentDidMount() {
     this.quizzController = new QuizzController();
-    this.quizzController.onGetList()
+    this.quizzController.getList()
       .then(res => res.data)
       .then(res => 
         res.map((quizz, idx) => ({ 

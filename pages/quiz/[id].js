@@ -2,7 +2,7 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import { withRouter } from 'next/router'
 import { QuizModel } from '../../model/QuizModel';
-const QuizzController =  require('../../controllers/quiz').default;
+const QuizzController =  require('../../controllers/quizzes').default;
 const Layout = dynamic(import('../../components/Layout'));
 const Navbar = dynamic(import('../../components/Navbar'));
 const SideBar = dynamic(import('../../components/SideBar'));
@@ -30,7 +30,7 @@ class FormEntry extends React.Component {
     console.log(this.props)
     const { query: {id} } = this.props.router;
     if(id !== "form-entry" && id !== undefined){
-      this.quizController.onGetById(id)
+      this.quizController.getById(id)
       .then(res => res.data)
       .then(quiz => this.setState({...quiz}))
     }

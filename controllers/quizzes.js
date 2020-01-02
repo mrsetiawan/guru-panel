@@ -7,11 +7,15 @@ class Quiz extends ControllerBase {
         return this.axios.post('quizzes', quizz)
     }
 
-    onGetList = () => {
+    getList = () => {
         return this.axios.get('quizzes')
     }
 
-    onGetById = (id) => {
+    getCount = () => {
+        return this.axios.get('quizzes/count')
+    }
+
+    getById = (id) => {
         return this.axios.get('quizzes/'+ id)
     }
 

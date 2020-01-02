@@ -1,8 +1,26 @@
 import ControllerBase from './ControllerBase'
+import { ChapterModel } from '../model/ChapterModel'
 
 class chapters extends ControllerBase {
-    index = () => {
+
+    onInsert = (chapter = ChapterModel) => {
+        return this.axios.post('chapters', chapter)
+    }
+
+    getList = () => {
         return this.axios.get('chapters')
+    }
+
+    getCount = () => {
+        return this.axios.get('chapters/count')
+    }
+
+    getById = (id) => {
+        return this.axios.get('chapters/'+ id)
+    }
+
+    onDelete = (id) => {
+        return this.axios.delete('chapters/'+ id)
     }
 }
 

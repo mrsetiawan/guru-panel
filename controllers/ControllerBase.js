@@ -6,7 +6,7 @@ export default class ControllerBase {
     axios;
 
     constructor() {
-        const token = localStorage.getItem("jwtToken");
+        const token = localStorage.getItem("jwt");
         this.axios = axios.create({
             baseURL: this.apiEndPoint,
             headers: {

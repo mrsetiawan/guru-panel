@@ -12,7 +12,7 @@ class Auth {
     }
 
     onLogin = (username, password) => {
-        return this.axios.post('auth/local', {
+        return this.axios.post(apiEndPoint + 'auth/local', {
             identifier: username,
             password: password,
         })

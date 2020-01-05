@@ -1,5 +1,5 @@
 export const QuizModel = {
-  _id: "",
+  _id: undefined,
   quizName: "",
   description: "",
   capacity: 0,

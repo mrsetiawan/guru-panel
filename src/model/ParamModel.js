@@ -10,5 +10,6 @@ export const ParamModel = {
     _contains: null,
     _containss: null,
     _in: null,
-    _nin: null
+    _nin: null,
+    _q: null
 }

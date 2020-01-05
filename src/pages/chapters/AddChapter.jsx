@@ -16,7 +16,6 @@ class AddChapter extends Component {
   }
 
   render() {
-    const { dataSelect } = this.state
     return (
 
       <div className="content-wrapper">

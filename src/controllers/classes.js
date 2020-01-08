@@ -1,5 +1,6 @@
 import ControllerBase from './ControllerBase';
 import { ClassModel } from '../model/ClassModel';
+import { ParamModel } from '../model/ParamModel';
 
 class Classes extends ControllerBase {
 
@@ -11,8 +12,11 @@ class Classes extends ControllerBase {
         return this.axios.put('classes/'+ classes.id, classes)
     }
 
-    getList = () => {
-        return this.axios.get('classes')
+    getList = (paramModel = ParamModel) => {
+        const createQueryParam =  (param, idx) => (idx === 0 ? "?"+ param[0] +"="+ param[1] : "&"+ param[0] +"="+ param[1]);
+        const isParamNotNull = param => param[1] !== null;
+        const queryParam = Object.entries(paramModel).filter(isParamNotNull).map(createQueryParam).join("")
+        return this.axios.get('classes'+ queryParam)
     }
 
     getCount = () => {

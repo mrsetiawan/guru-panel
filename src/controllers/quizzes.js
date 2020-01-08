@@ -1,5 +1,6 @@
 import ControllerBase from './ControllerBase';
 import { QuizModel } from '../model/QuizModel';
+import { ParamModel } from '../model/ParamModel';
 
 class Quiz extends ControllerBase {
 
@@ -8,11 +9,14 @@ class Quiz extends ControllerBase {
     }
 
     onUpdate = (quizz = QuizModel) => {
-        return this.axios.put('quizzes/'+ quizz.id, quizz)
+        return this.axios.put('quizzes/'+ quizz._id, quizz)
     }
 
-    getList = () => {
-        return this.axios.get('quizzes')
+    getList = (paramModel = ParamModel) => {
+        const createQueryParam =  (param, idx) => (idx === 0 ? "?"+ param[0] +"="+ param[1] : "&"+ param[0] +"="+ param[1]);
+        const isParamNotNull = param => param[1] !== null;
+        const queryParam = Object.entries(paramModel).filter(isParamNotNull).map(createQueryParam).join("")
+        return this.axios.get('quizzes'+ queryParam)
     }
 
     getCount = () => {

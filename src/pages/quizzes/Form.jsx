@@ -42,7 +42,7 @@ class Form extends Component {
   componentDidMount()
   {
     const paramId = this.props.match.params.id;
-    if(paramId)
+    if(paramId !== "entry")
     {
       this.setState({ isEntry: false })
       this.quizController.getById(paramId)
@@ -101,6 +101,8 @@ class Form extends Component {
   }
 
   onChangeClass = ({target: {value}}) => {
+    this.setState({selectClass: {...this.state.selectClass, value} })
+
     this.classController
         .getList({  _q: value })
         .then(res => res.data)
@@ -109,7 +111,7 @@ class Form extends Component {
           this.setState({ selectClass: {...this.state.selectClass, data: classes} })
         })
 
-    this.setState({selectClass: {...this.state.selectClass, value} })
+   
   }
 
   deleteClass = (id) => {
@@ -128,15 +130,22 @@ class Form extends Component {
   }
 
   onChangeChapter = ({target: {value}}) => {
-    this.classController
+    
+    try{
+      this.setState({selectChapter: {...this.state.selectChapter, value} })
+    this.chapterController
         .getList({  _q: value })
         .then(res => res.data)
         .then(res => {
           const chapters = res.map(x => ({ id: x.id, label: x.name }))
-          this.setState({ selectChapter: {...this.state.selectChapter, data: chapters } })
+          this.setState({ selectChapter: {...this.state.selectChapter, data: [...chapters] } })
         })
+      }catch(err){
+        debugger
+        console.log(err)
+      }
 
-    this.setState({selectChapter: {...this.state.selectChapter, value} })
+   
   }
 
   deleteChapter = (id) => {
@@ -155,6 +164,8 @@ class Form extends Component {
   }
 
   onChangeCourse = ({target: {value}}) => {
+    this.setState({selectCourse: {...this.state.selectCourse, value} })
+
     this.courseController
         .getList({  _q: value })
         .then(res => res.data)
@@ -163,7 +174,7 @@ class Form extends Component {
           this.setState({ selectCourse: {...this.state.selectCourse, data: courses } })
         })
 
-    this.setState({selectCourse: {...this.state.selectCourse, value} })
+   
   }
 
   deleteCourse = (id) => {
@@ -259,7 +270,7 @@ class Form extends Component {
                         getItemValue={(item) => item}
                         items={selectChapter.data}
                         renderItem={this.renderItemAutoComplete}
-                        value={selectClass.value}
+                        value={selectChapter.value}
                         onSelect={this.onSelectChapter}
                         onChange={this.onChangeChapter}
                       />

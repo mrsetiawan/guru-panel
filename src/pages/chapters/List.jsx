@@ -11,10 +11,7 @@ class List extends Component {
   state = {
     dataTable: {
       thead : [ "No", "Name", "CreatedAt", "UpdatedAt"],
-      tbody : [
-        { No: 1, Name: 'list chapters 1', CreadAt: "12 Dec 2019", UpdateAt: "12 Dec 2019" },
-        { No: 2, Name: 'list chapters 2', CreadAt: "12 Dec 2019", UpdateAt: "12 Dec 2019" },
-      ]
+      tbody : []
     }
   }
 
@@ -22,6 +19,7 @@ class List extends Component {
   {
     this.controller.getList().then(res => res.data)
     .then(chapters => {
+      if(chapters.length !== 0){
       const createdAt = moment(new Date(chapters[0].createdAt)).format("D MMMM Y");
       const updatedAt = moment(new Date(chapters[0].updatedAt)).format("D MMMM Y");
       const tbody = chapters.map((quiz, idx) => ({
@@ -31,7 +29,7 @@ class List extends Component {
       this.setState({ 
         dataTable: { ...this.state.dataTable, tbody: tbody} 
        })
-
+      }
     })
   }
 

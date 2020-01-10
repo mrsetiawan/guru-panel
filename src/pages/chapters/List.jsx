@@ -3,13 +3,14 @@ import Table from '../../components/Table'
 import ButtonAction from '../../components/ButtonAction'
 import ContentHeader from '../../components/ContentHeader'
 import ChapterController from '../../controllers/chapters';
+import moment from 'moment';
 
 class List extends Component {
 
   controller = new ChapterController();
   state = {
     dataTable: {
-      thead : [ "No", "Name", "UpdateAt"],
+      thead : [ "No", "Name", "CreatedAt", "UpdatedAt"],
       tbody : [
         { No: 1, Name: 'list chapters 1', CreadAt: "12 Dec 2019", UpdateAt: "12 Dec 2019" },
         { No: 2, Name: 'list chapters 2', CreadAt: "12 Dec 2019", UpdateAt: "12 Dec 2019" },
@@ -19,8 +20,19 @@ class List extends Component {
 
   componentDidMount()
   {
-    console.log(this.controller)
-    this.controller.getList().then(res => console.log(res))
+    this.controller.getList().then(res => res.data)
+    .then(chapters => {
+      const createdAt = moment(new Date(chapters[0].createdAt)).format("D MMMM Y");
+      const updatedAt = moment(new Date(chapters[0].updatedAt)).format("D MMMM Y");
+      const tbody = chapters.map((quiz, idx) => ({
+        id: quiz.id, No: ++idx, "Name": quiz.name, "CreatedAt": createdAt, "UpdatedAt": updatedAt
+      }))
+
+      this.setState({ 
+        dataTable: { ...this.state.dataTable, tbody: tbody} 
+       })
+
+    })
   }
 
   render() {

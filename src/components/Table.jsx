@@ -4,7 +4,7 @@ import ButtonAction from '../components/ButtonAction'
 export class Table extends Component {
 
   render() {
-    const { data: { thead, tbody } } = this.props;
+    const { data: { thead, tbody, route } } = this.props;
 
     return (
       <div className="card-body pad">
@@ -23,7 +23,7 @@ export class Table extends Component {
                   <tr key={idx}>
                     {thead.map((head, idxx) => <td key={idxx}>{body[head]}</td>)}
                     <td>
-                      <ButtonAction type="button" title='Edit' class="btn btn-outline-warning btn-sm" icon='fas fa-edit' /> &nbsp;
+                      <ButtonAction url={ `/${route}/${body.id}` } type="button" title='Edit' class="btn btn-outline-warning btn-sm" icon='fas fa-edit' /> &nbsp;
                       <ButtonAction type="button" title='Delete' class="btn btn-outline-danger btn-sm" icon='fas fa-trash' />
                     </td>
                   </tr>

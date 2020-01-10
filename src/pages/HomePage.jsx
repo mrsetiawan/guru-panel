@@ -17,6 +17,7 @@ const ListQuiz = lazy(() => import('./quizzes/List'))
 const AddQuiz = lazy(() => import('./quizzes/Add'))
 const ListClasses = lazy(() => import('./classes/List'))
 
+const FormQuiz = lazy(() => import('./quizzes/Form'))
 
 export default function HomePage() {
   return (
@@ -35,9 +36,10 @@ export default function HomePage() {
         <Route exact path='/province' component={ListProvince} />
         <Route path='/province/entry' component={AddProvince} />
         <Route exact path='/quiz' component={ListQuiz} />
-        <Route path='/quiz/entry' component={AddQuiz} />
         <Route exact path='/classes' component={ListClasses} />
         {/* <Route path='/chapter/:id' component={UpdateChapters} /> */}
+        <Route path='/quiz/entry' component={FormQuiz} />
+        <Route path='/quiz/:id' component={FormQuiz} />
         <Footer />
       </Switch>
 

@@ -10,3 +10,4 @@ export const ClassModel = {
   courses:[],
   quizzes:[]
 } 
+

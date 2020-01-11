@@ -1,40 +1,118 @@
 import React, { Component } from 'react'
-import ButtonAction from '../../components/ButtonAction'
+import AsyncSelect from 'react-select/async'
 import ContentHeader from '../../components/ContentHeader'
+import QuestionController from '../../controllers/questions'
+import ChapterController from '../../controllers/chapters'
+import CurriculumController from '../../controllers/curriculums'
+import QuizController from '../../controllers/quizzes'
+import { ChapterModel } from '../../model/ChapterModel'
 
-class AddChapter extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      dataSelect: [
-        { id: 1, name: 'select 1' },
-        { id: 2, name: 'select 2' },
-        { id: 3, name: 'select 3' },
-        { id: 4, name: 'select 4' },
-      ]
+
+class Form extends Component {
+  quizController = new QuizController()
+  questionController = new QuestionController();
+  chapterController = new ChapterController();
+  curriculumController = new CurriculumController();
+
+  state = {
+      model: {...ChapterModel},
+      curriculumOpts: [],
+      quizzesOpts: [],
+      userOpts: [],
+      isEntry: true
+    }
+
+  componentDidMount()
+  {
+     const paramId = this.props.match.params.id;
+    if(paramId !== "entry" && paramId !== undefined)
+    {
+      this.setState({ isEntry: false })
+      this.chapterController.getById(paramId)
+          .then(res => res.data)
+          .then(res => {
+            this.setState({ model: {...res} })
+            
+          })
+    }
+
+    this.curriculumController.getList()
+    .then(res => res.data)
+    .then(res => {
+      this.setState({ curriculumOpts: res })
+    })
+
+    this.quizController.getList()
+    .then(res => res.data)
+    .then(res => {
+      this.setState({ quizzesOpts: res })
+    })
+    
+  }
+
+  onChangeModel = (type, value) => {
+    this.setState({ model: {...this.state.model, [type]: value } })
+  }
+
+  onSaveForm = () => {
+    const chapters = this.state.model.chapters.map(x => x.id);
+    const courses = this.state.model.courses.map(x => x.id);
+    const classes = this.state.model.classes.map(x => x.id);
+    if(this.state.isEntry){
+    this.quizController.onInsert({...this.state.model, chapters, courses, classes })
+        .then(() => alert('success'))
+    }else{
+      this.quizController.onUpdate({...this.state.model, chapters, courses, classes })
+        .then(() => alert('success'))
     }
   }
 
+  onResetForm = () => {
+    this.setState({ model: {...ChapterModel} })
+  }
+
+  loadQuestion = (inputValue, callback) => {
+    this.questionController
+      .getList({ _q: inputValue })
+      .then(res => res.data)
+      .then(res => {
+        const questions = res.map(x => ({ value: x.id, label: x.name }))
+        callback([...questions])
+      })
+
+  }
+ 
+  handleChangeQuestion = (question) => {
+      this.setState({ model: { 
+          ...this.state.model, 
+          questions: [ ...this.state.model.questions, {...question} ] 
+        } 
+      })
+  }
+
+  addSubChapter = () => {
+    this.setState({ model: { ...this.state.model, SubChapter: [...this.state.model.SubChapter, {id: null, name: "" } ] } 
+    })
+  }
+
+  deleteSubChapter = (idx) => {
+    const subChapters = [...this.state.model.SubChapter].splice(idx, 1);
+    this.setState({model: { ...this.state.model, SubChapter: [...subChapters] } })
+  }
+
   render() {
-    const { dataSelect } = this.state
+    const {  model, curriculumOpts, quizzesOpts, userOpts, isEntry } = this.state
     return (
-
       <div className="content-wrapper">
-
         <div className='col-md-12'>
+
           <div className='row'>
-            <div className='col-md-10'>
-              <ContentHeader title="Add Chapters" />
+            <div className='col-md-9'>
+              {isEntry ? <ContentHeader title="Create An Entry" /> : <ContentHeader title="Edit quiz" />}
             </div>
-            <div className='col-md-2 p-2'>
-              <div className='row p-2'>
-                <div className='col-md-6'>
-                  <ButtonAction title='Reset' class='btn btn-block btn-default' />
-                </div>
-                <div className='col-md-6'>
-                  <ButtonAction title='Save' class='btn btn-block btn-success ' />
-                </div>
-              </div>
+            <div className='col-md-3 p-2 d-flex align-items-center justify-content-between'>
+              <a href="#" onClick={this.onResetForm} className='btn btn-block' >Reset</a>
+              <a href="#" onClick={this.onSaveForm} className='btn btn-block btn-success' >Save</a>
             </div>
           </div>
         </div>
@@ -43,48 +121,97 @@ class AddChapter extends Component {
           <div className="row">
             <div className="col-md-12">
               <div className='row'>
-                <div className='col-md-6'>
+                <div className='col-md-8'>
                   <div className="card">
-                    <div className="card-header">
-                      <h3 className="card-title mb-0">Add Chapters</h3>
-                    </div>
                     <div className="card-body pad">
                       <div className="form-group">
-                        <label for="inputName">Chapter Name</label>
-                        <input type="text" id="inputName" className="form-control" name='name' />
+                        <label htmlFor="inputName">Name</label>
+                        <input 
+                          type="text" 
+                          id="inputName" 
+                          className="form-control"
+                          value={model.quizName}
+                          onChange={(ev) => this.onChangeModel("quizName", ev.target.value)}
+                           />
                       </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='col-md-6'>
-                  <div className="card">
-                    <div className="card-body pad">
-                      {[0, 1, 2, 3].map(val => {
-                        return (
-                          <div className="form-group" key={val}>
-                            <label for="inputStatus">Curiculum</label>
-                            <select className="form-control custom-select">
-                              <option selected="" disabled="">Select one</option>
-                              <option>On Hold</option>
-                              <option>Canceled</option>
-                              <option>Success</option>
-                            </select>
+                      {model.SubChapter.map( (ch, idx) => 
+                      (<div className="form-group" key={idx}>
+                        <div className="d-flex align-items-center justify-content-between mb-2">
+                        <label >Sub Chapter {++idx}</label>
+                          <div>
+                            <button className="btn btn-sm btn-primary" 
+                                    type="button" 
+                                    data-toggle="collapse" 
+                                    data-target={"#subChapter"+ idx}
+                                    aria-expanded="false" 
+                                    >
+                            <i className="fa fa-edit"></i>
+                            </button>&nbsp;
+                            <button className="btn btn-sm btn-danger" 
+                                    type="button" 
+                                    onClick={() => this.deleteSubChapter(idx)}
+                                    >
+                            <i className="fas fa-trash"></i>
+                            </button>
                           </div>
-                        )
-                      })}
-
+                        </div>
+                        <div className="collapse"  id={ "subChapter"+ idx }>
+                      <textarea className="form-control" rows="3">{ch.name}</textarea>
+                        </div>
+                      </div>
+                      ))}
+                      <button type="button" onClick={this.addSubChapter} className="btn btn-sm btn-primary">Add new sub chapter +</button>
                     </div>
                   </div>
                 </div>
 
+                <div className='col-md-4'>
+                  <div className="card">
+                    <div className="card-body pad d-flex flex-column">
+                    <label >Curriculum</label>
+                      <select className="form-control">
+                          {curriculumOpts.map(op => <option key={op.id} value={op.id}>{op.name}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="card-body pad d-flex flex-column">
+                     <AsyncSelect 
+                      isMulti
+                      placeholder="Select questions"
+                      closeMenuOnSelect={false}
+                      cacheOptions
+                      loadOptions={this.loadQuestion}
+                      onChange={this.handleChangeQuestion}
+                      />
+                     
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="card-body pad d-flex flex-column">
+                    <label >Quiz</label>
+                      <select className="form-control">
+                          {quizzesOpts.map(op => <option key={op.id} value={op.id}>{op.quizName}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="card">
+                    <div className="card-body pad d-flex flex-column">
+                    <label >User</label>
+                      <select className="form-control">
+                      </select>
+                          {userOpts.map(op => <option key={op.id} value={op.id}>{op.name}</option>)}
+                    </div>
+                  </div>
+                  
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </div>  
       </div>
     )
   }
 }
 
-export default AddChapter
+export default Form

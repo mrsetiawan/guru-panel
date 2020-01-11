@@ -10,7 +10,7 @@ class Questions extends ControllerBase {
     }
 
     onUpdate = (questions = QuestionsModel) => {
-        return this.axios.put('/questions/' + userQuizz.id, questions)
+        return this.axios.put('/questions/' + questions.id, questions)
     }
 
     getList = () => {

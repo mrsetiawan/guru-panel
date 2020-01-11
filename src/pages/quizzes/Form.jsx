@@ -15,10 +15,6 @@ class Form extends Component {
   courseController = new CourseController();
 
   state = {
-      selectClass: { data: [], value: '' },
-      selectChapter: { data: [], value: '' },
-      selectQuestion: { data: [], value: '' },
-      selectCourse: { data: [], value: '' },
       model: {...QuizModel},
       isEntry: true
     }
@@ -51,9 +47,9 @@ class Form extends Component {
   }
 
   onSaveForm = () => {
-    const chapters = this.state.model.chapters.map(x => x.id);
-    const courses = this.state.model.courses.map(x => x.id);
-    const classes = this.state.model.classes.map(x => x.id);
+    const chapters = this.state.model.chapters.map(x => x.value);
+    const courses = this.state.model.courses.map(x => x.value);
+    const classes = this.state.model.classes.map(x => x.value);
     if(this.state.isEntry){
     this.quizController.onInsert({...this.state.model, chapters, courses, classes })
         .then(() => alert('success'))
@@ -73,7 +69,7 @@ class Form extends Component {
       .getList({ _q: inputValue })
       .then(res => res.data)
       .then(res => {
-        const chapters = res.map(x => ({ id: x.id, label: x.name }))
+        const chapters = res.map(x => ({ value: x.id, label: x.name }))
         callback(chapters)
       })
     }else{
@@ -81,22 +77,14 @@ class Form extends Component {
     }
   }
  
-  handleChangeChapter = (chapter) => {
-    if(chapter){
+  handleChangeChapter = (chapters) => {
       this.setState({ model: { 
           ...this.state.model, 
-          chapters: [ ...this.state.model.chapters, {...chapter} ] 
+          chapters: [ ...chapters ] 
         } 
       })
-    }
   }
 
-  deleteChapter = (id) => {
-    const remClassById = this.state.model.chapters.filter(cls => cls.id !== id);
-    this.setState({
-      model:  {...this.state.model, chapters: [...remClassById] }
-    })
-  }
 
   loadClass = (inputValue, callback) => {
     if(inputValue){
@@ -104,7 +92,7 @@ class Form extends Component {
       .getList({ _q: inputValue })
       .then(res => res.data)
       .then(res => {
-        const classes = res.map(x => ({ id: x.id, label: x.className }))
+        const classes = res.map(x => ({ value: x.id, label: x.className }))
         callback(classes)
       })
     }else{
@@ -113,21 +101,13 @@ class Form extends Component {
   }
  
   handleChangeClass = (cls) => {
-    if(cls){
       this.setState({ model: { 
           ...this.state.model, 
-          classes: [ ...this.state.model.classes, {...cls} ] 
+          classes: [ ...cls ] 
         } 
       })
-    }
   }
 
-  deleteClass = (id) => {
-    const remClassById = this.state.model.classes.filter(cls => cls.id !== id);
-    this.setState({
-      model:  {...this.state.model, classes: [...remClassById] }
-    })
-  }
 
   loadCourse = (inputValue, callback) => {
     if(inputValue){
@@ -135,7 +115,7 @@ class Form extends Component {
       .getList({ _q: inputValue })
       .then(res => res.data)
       .then(res => {
-        const courses = res.map(x => ({ id: x.id, label: x.className }))
+        const courses = res.map(x => ({ value: x.id, label: x.className }))
         callback(courses)
       })
     }else{
@@ -144,21 +124,14 @@ class Form extends Component {
   }
  
   handleChangeCourse = (cls) => {
-    if(cls){
       this.setState({ model: { 
           ...this.state.model, 
-          courses: [ ...this.state.model.courses, {...cls} ] 
+          courses: [ ...cls ] 
         } 
       })
-    }
   }
 
-  deleteCourse = (id) => {
-    const remClassById = this.state.model.courses.filter(cls => cls.id !== id);
-    this.setState({
-      model:  {...this.state.model, courses: [...remClassById] }
-    })
-  }
+
 
   render() {
     const {  model, isEntry } = this.state
@@ -244,17 +217,11 @@ class Form extends Component {
                      <AsyncSelect 
                       placeholder="Select a chapter"
                       closeMenuOnSelect={false}
-                      isClearable
+                      isMulti
                       cacheOptions
                       loadOptions={this.loadChapter}
-                      defaultOptions
                       onChange={this.handleChangeChapter}/>
-                      {model.chapters.map((cls, idx) => 
-                      <div key={idx} className="d-flex justify-content-between align-items-center mt-1 shadow-sm p-1">
-                          <span>{cls.label}</span> 
-                          <a href="#" 
-                             onClick={() => this.deleteChapter(cls.id)} className="btn btn-sm btn-danger">x</a>
-                      </div>)}
+                      
                     </div>
                   </div>
                   <div className="card">
@@ -262,7 +229,7 @@ class Form extends Component {
                      <AsyncSelect 
                       placeholder="Select a class"
                       closeMenuOnSelect={false}
-                      isClearable
+                      isMulti
                       cacheOptions
                       loadOptions={this.loadClass}
                       defaultOptions
@@ -280,7 +247,7 @@ class Form extends Component {
                      <AsyncSelect 
                       placeholder="Select a course"
                       closeMenuOnSelect={false}
-                      isClearable
+                      isMulti
                       cacheOptions
                       loadOptions={this.loadCourse}
                       defaultOptions

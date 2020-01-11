@@ -11,7 +11,7 @@ class List extends Component {
     super(props)
     this.state = {
       dataTable: {
-        thead: ["No", "ClassLevel", "ClassName", "CreatedAt"],
+        thead: ["No", "ClassLevel", "ClassName"],
         tbody: []
       }
     }
@@ -22,7 +22,7 @@ class List extends Component {
     .then(res => res.data)
     .then(classes => {
       const tbody = classes.map((val, idx) => ({
-        No: idx+1, "ClassLevel" : val.classLevel, "ClassName" : val.className, "CreatedAt": val.createdAt 
+        No: idx+1, "ClassLevel" : val.classLevel, "ClassName" : val.className
       }))
 
       this.setState({

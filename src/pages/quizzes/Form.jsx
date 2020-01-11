@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
+import AsyncSelect from 'react-select/async'
 import ContentHeader from '../../components/ContentHeader'
-import Autocomplete from 'react-autocomplete'
 import CKEditor from 'ckeditor4-react'
 import QuizController from '../../controllers/quizzes'
 import ClassController from '../../controllers/classes'
@@ -28,55 +28,21 @@ class Form extends Component {
     height: 320
   }
 
-  renderItemAutoComplete = (item, isHighlighted) => (
-    <div className="p-2" key={item.id} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
-      {item.label}
-    </div>
-  )
+ 
 
-  menuStyleAutoComplete = { 
-    zIndex: 999,
-    position: "fixed",
-    boxShadow: "0 2px 2px #ccc"
-  }
   componentDidMount()
   {
-
-    // const paramId = this.props.match.params.id;
-    // if(paramId !== "entry" && paramId !== undefined)
-    // {
-    //   this.setState({ isEntry: false })
-    //   this.quizController.getById(paramId)
-    //       .then(res => res.data)
-    //       .then(res => {
-    //         this.setState({ model: {...res} })
+     const paramId = this.props.match.params.id;
+    if(paramId !== "entry" && paramId !== undefined)
+    {
+      this.setState({ isEntry: false })
+      this.quizController.getById(paramId)
+          .then(res => res.data)
+          .then(res => {
+            this.setState({ model: {...res} })
             
-    //       })
-    // }
-
-    // this.classController
-    //     .getList({ _limit: 10 })
-    //     .then(res => res.data)
-    //     .then(res => {
-    //       const classes = res.map(x => ({ id: x.id, label: x.className }))
-    //       this.setState({ selectClass: {...this.state.selectClass, data: classes} })
-    //     })
-
-    this.chapterController
-        .getList({ _q: 'a'})
-        .then(res => res.data)
-        .then(res => {
-          const chapters = res.map(x => ({ id: x.id, label: x.name }))
-          this.setState({ selectChapter: {...this.state.selectChapter, data: chapters} })
-        })
-
-    // this.courseController
-    //     .getList({ _limit: 10 })
-    //     .then(res => res.data)
-    //     .then(res => {
-    //       const courses = res.map(x => ({ id: x.id, label: x.name }))
-    //       this.setState({ selectCourse: {...this.state.selectCourse, data: courses } })
-    //     })
+          })
+    }
 
   }
 
@@ -101,24 +67,59 @@ class Form extends Component {
     this.setState({ model: {...QuizModel} })
   }
 
-  onSelectClass = item => {
-    const classes = [ ...this.state.model.classes, item];
+  loadChapter = (inputValue, callback) => {
+    if(inputValue){
+    this.chapterController
+      .getList({ _q: inputValue })
+      .then(res => res.data)
+      .then(res => {
+        const chapters = res.map(x => ({ id: x.id, label: x.name }))
+        callback(chapters)
+      })
+    }else{
+      callback(null)
+    }
+  }
+ 
+  handleChangeChapter = (chapter) => {
+    if(chapter){
+      this.setState({ model: { 
+          ...this.state.model, 
+          chapters: [ ...this.state.model.chapters, {...chapter} ] 
+        } 
+      })
+    }
+  }
+
+  deleteChapter = (id) => {
+    const remClassById = this.state.model.chapters.filter(cls => cls.id !== id);
     this.setState({
-      selectClass: {...this.state.selectClass, value: item.value}, 
-      model: {...this.state.model, classes }
+      model:  {...this.state.model, chapters: [...remClassById] }
     })
   }
 
-  onChangeClass = ({target: {value}}) => {
-    this.setState({selectClass: {...this.state.selectClass, value} })
-
+  loadClass = (inputValue, callback) => {
+    if(inputValue){
     this.classController
-        .getList({  _q: value })
-        .then(res => res.data)
-        .then(res => {
-          const classes = res.map(x => ({ id: x.id, label: x.className }))
-          this.setState({ selectClass: {...this.state.selectClass, data: classes} })
-        })
+      .getList({ _q: inputValue })
+      .then(res => res.data)
+      .then(res => {
+        const classes = res.map(x => ({ id: x.id, label: x.className }))
+        callback(classes)
+      })
+    }else{
+      callback(null)
+    }
+  }
+ 
+  handleChangeClass = (cls) => {
+    if(cls){
+      this.setState({ model: { 
+          ...this.state.model, 
+          classes: [ ...this.state.model.classes, {...cls} ] 
+        } 
+      })
+    }
   }
 
   deleteClass = (id) => {
@@ -128,53 +129,28 @@ class Form extends Component {
     })
   }
 
-  onSelectChapter = item => {
-    const chapters = [ ...this.state.model.chapters, item];
-    this.setState({
-      selectChapter: {...this.state.selectChapter, value: item.value}, 
-      model: {...this.state.model, chapters }
-    })
-  }
-
-  onChangeChapter = ({target: {value}}) => {
-    this.setState({selectChapter: {...this.state.selectChapter, value} })
-
-    this.chapterController
-        .getList({  _q: value })
-        .then(res => res.data)
-        .then(res => {
-          let chapters = res.map(x => ({ id: x.id, label: x.name }))
-          this.setState({ selectChapter: {...this.state.selectChapter, data: chapters } })
-        })
-  }
-
-  deleteChapter = (id) => {
-    const remClassById = this.state.model.chapters.filter(cls => cls.id !== id);
-    this.setState({
-      model:  {...this.state.model, chapters: [...remClassById] }
-    })
+  loadCourse = (inputValue, callback) => {
+    if(inputValue){
+    this.courseController
+      .getList({ _q: inputValue })
+      .then(res => res.data)
+      .then(res => {
+        const courses = res.map(x => ({ id: x.id, label: x.className }))
+        callback(courses)
+      })
+    }else{
+      callback(null)
+    }
   }
  
-  onSelectCourse = item => {
-    const courses = [ ...this.state.model.courses, item];
-    this.setState({
-      selectCourse: {...this.state.selectCourse, value: item.value}, 
-      model: {...this.state.model, courses }
-    })
-  }
-
-  onChangeCourse = ({target: {value}}) => {
-    this.setState({selectCourse: {...this.state.selectCourse, value} })
-
-    this.courseController
-        .getList({  _q: value })
-        .then(res => res.data)
-        .then(res => {
-          const courses = res.map(x => ({ id: x.id, label: x.name }))
-          this.setState({ selectCourse: {...this.state.selectCourse, data: courses } })
-        })
-
-   
+  handleChangeCourse = (cls) => {
+    if(cls){
+      this.setState({ model: { 
+          ...this.state.model, 
+          courses: [ ...this.state.model.courses, {...cls} ] 
+        } 
+      })
+    }
   }
 
   deleteCourse = (id) => {
@@ -183,8 +159,9 @@ class Form extends Component {
       model:  {...this.state.model, courses: [...remClassById] }
     })
   }
+
   render() {
-    let { selectClass, selectChapter, selectCourse, model, isEntry } = this.state
+    const {  model, isEntry } = this.state
     return (
       <div className="content-wrapper">
         <div className='col-md-12'>
@@ -264,16 +241,14 @@ class Form extends Component {
                 <div className='col-md-4'>
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
-                      <Autocomplete
-                        menuStyle={this.menuStyleAutoComplete}
-                        inputProps={{  className: "form-control", placeholder: "Select a chapter" }}
-                        getItemValue={(item) => item}
-                        items={selectChapter.data}
-                        renderItem={this.renderItemAutoComplete}
-                        value={selectChapter.value}
-                        onSelect={this.onSelectChapter}
-                        onChange={this.onChangeChapter}
-                      />
+                     <AsyncSelect 
+                      placeholder="Select a chapter"
+                      closeMenuOnSelect={false}
+                      isClearable
+                      cacheOptions
+                      loadOptions={this.loadChapter}
+                      defaultOptions
+                      onChange={this.handleChangeChapter}/>
                       {model.chapters.map((cls, idx) => 
                       <div key={idx} className="d-flex justify-content-between align-items-center mt-1 shadow-sm p-1">
                           <span>{cls.label}</span> 
@@ -284,47 +259,41 @@ class Form extends Component {
                   </div>
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
-                      <Autocomplete
-                        menuStyle={this.menuStyleAutoComplete}
-                        inputProps={{  className: "form-control", placeholder: "Select a class" }}
-                        getItemValue={(item) => item}
-                        items={selectClass.data}
-                        renderItem={this.renderItemAutoComplete}
-                        value={selectClass.value}
-                        onSelect={this.onSelectClass}
-                        onChange={this.onChangeClass}
-                      />
+                     <AsyncSelect 
+                      placeholder="Select a class"
+                      closeMenuOnSelect={false}
+                      isClearable
+                      cacheOptions
+                      loadOptions={this.loadClass}
+                      defaultOptions
+                      onChange={this.handleChangeClass}/>
                       {model.classes.map((cls, idx) => 
                       <div key={idx} className="d-flex justify-content-between align-items-center mt-1 shadow-sm p-1">
                           <span>{cls.label}</span> 
                           <a href="#" 
-                             onClick={() => this.deleteClass(cls.id)} 
-                             className="btn btn-sm btn-danger">x</a>
+                             onClick={() => this.deleteClass(cls.id)} className="btn btn-sm btn-danger">x</a>
                       </div>)}
                     </div>
                   </div>
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
-                      <Autocomplete
-                        menuStyle={this.menuStyleAutoComplete}
-                        inputProps={{  className: "form-control", placeholder: "Select a course" }}
-                        getItemValue={(item) => item}
-                        items={selectCourse.data}
-                        renderItem={this.renderItemAutoComplete}
-                        value={selectCourse.value}
-                        onSelect={this.onSelectCourse}
-                        onChange={this.onChangeCourse}
-                      />
+                     <AsyncSelect 
+                      placeholder="Select a course"
+                      closeMenuOnSelect={false}
+                      isClearable
+                      cacheOptions
+                      loadOptions={this.loadCourse}
+                      defaultOptions
+                      onChange={this.handleCourseClass}/>
                       {model.courses.map((cls, idx) => 
                       <div key={idx} className="d-flex justify-content-between align-items-center mt-1 shadow-sm p-1">
                           <span>{cls.label}</span> 
                           <a href="#" 
-                             onClick={() => this.deleteClass(cls.id)} 
-                             className="btn btn-sm btn-danger">x</a>
+                             onClick={() => this.deleteCourse(cls.id)} className="btn btn-sm btn-danger">x</a>
                       </div>)}
                     </div>
                   </div>
-                
+                 
                 </div>
               </div>
             </div>

@@ -10,11 +10,11 @@
     "ckeditor4-react": "^1.0.1",
     "moment": "^2.24.0",
     "react": "^16.12.0",
-    "react-autocomplete": "^1.8.1",
     "react-dom": "^16.12.0",
     "react-lazy": "^1.1.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.3.0"
+    "react-scripts": "3.3.0",
+    "react-select": "^3.0.8"
   },
   "scripts": {
     "start": "react-scripts start",

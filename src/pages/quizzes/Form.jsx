@@ -41,33 +41,42 @@ class Form extends Component {
   }
   componentDidMount()
   {
-    const paramId = this.props.match.params.id;
-    if(paramId !== "entry")
-    {
-      this.setState({ isEntry: false })
-      this.quizController.getById(paramId)
-          .then(res => res.data)
-          .then(res => {
-            this.setState({ model: {...res} })
-            
-          })
-    }
 
-    this.classController
-        .getList({ _limit: 10 })
-        .then(res => res.data)
-        .then(res => {
-          const classes = res.map(x => ({ id: x.id, label: x.className }))
-          this.setState({ selectClass: {...this.state.selectClass, data: classes} })
-        })
+    // const paramId = this.props.match.params.id;
+    // if(paramId !== "entry" && paramId !== undefined)
+    // {
+    //   this.setState({ isEntry: false })
+    //   this.quizController.getById(paramId)
+    //       .then(res => res.data)
+    //       .then(res => {
+    //         this.setState({ model: {...res} })
+            
+    //       })
+    // }
+
+    // this.classController
+    //     .getList({ _limit: 10 })
+    //     .then(res => res.data)
+    //     .then(res => {
+    //       const classes = res.map(x => ({ id: x.id, label: x.className }))
+    //       this.setState({ selectClass: {...this.state.selectClass, data: classes} })
+    //     })
 
     this.chapterController
-        .getList({ _limit: 10 })
+        .getList({ _q: 'a'})
         .then(res => res.data)
         .then(res => {
           const chapters = res.map(x => ({ id: x.id, label: x.name }))
           this.setState({ selectChapter: {...this.state.selectChapter, data: chapters} })
         })
+
+    // this.courseController
+    //     .getList({ _limit: 10 })
+    //     .then(res => res.data)
+    //     .then(res => {
+    //       const courses = res.map(x => ({ id: x.id, label: x.name }))
+    //       this.setState({ selectCourse: {...this.state.selectCourse, data: courses } })
+    //     })
 
   }
 
@@ -110,8 +119,6 @@ class Form extends Component {
           const classes = res.map(x => ({ id: x.id, label: x.className }))
           this.setState({ selectClass: {...this.state.selectClass, data: classes} })
         })
-
-   
   }
 
   deleteClass = (id) => {
@@ -130,22 +137,15 @@ class Form extends Component {
   }
 
   onChangeChapter = ({target: {value}}) => {
-    
-    try{
-      this.setState({selectChapter: {...this.state.selectChapter, value} })
+    this.setState({selectChapter: {...this.state.selectChapter, value} })
+
     this.chapterController
         .getList({  _q: value })
         .then(res => res.data)
         .then(res => {
-          const chapters = res.map(x => ({ id: x.id, label: x.name }))
-          this.setState({ selectChapter: {...this.state.selectChapter, data: [...chapters] } })
+          let chapters = res.map(x => ({ id: x.id, label: x.name }))
+          this.setState({ selectChapter: {...this.state.selectChapter, data: chapters } })
         })
-      }catch(err){
-        debugger
-        console.log(err)
-      }
-
-   
   }
 
   deleteChapter = (id) => {
@@ -184,7 +184,7 @@ class Form extends Component {
     })
   }
   render() {
-    const { selectClass, selectChapter, selectCourse, model, isEntry } = this.state
+    let { selectClass, selectChapter, selectCourse, model, isEntry } = this.state
     return (
       <div className="content-wrapper">
         <div className='col-md-12'>

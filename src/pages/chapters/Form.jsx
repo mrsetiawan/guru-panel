@@ -51,7 +51,7 @@ class Form extends Component {
   }
 
   onChangeModel = (type, value) => {
-    this.setState({ model: {...this.state.model, [type]: value } })
+    this.setState({ model: {...this.state.model, type: value } })
   }
 
   onSaveForm = () => {
@@ -76,7 +76,7 @@ class Form extends Component {
       .getList({ _q: inputValue })
       .then(res => res.data)
       .then(res => {
-        const questions = res.map(x => ({ value: x.id, label: x.name }))
+        const questions = res.map(x => ({ value: x.id, label: x.question }))
         callback([...questions])
       })
 
@@ -96,8 +96,8 @@ class Form extends Component {
   }
 
   deleteSubChapter = (idx) => {
-    const subChapters = [...this.state.model.SubChapter].splice(idx, 1);
-    this.setState({model: { ...this.state.model, SubChapter: [...subChapters] } })
+    this.state.model.SubChapter.splice(idx, 1);
+    this.setState({model: { ...this.state.model, SubChapter: [...this.state.model.SubChapter] } })
   }
 
   render() {
@@ -131,13 +131,13 @@ class Form extends Component {
                           id="inputName" 
                           className="form-control"
                           value={model.quizName}
-                          onChange={(ev) => this.onChangeModel("quizName", ev.target.value)}
+                          onChange={(ev) => this.onChangeModel(["name"], ev.target.value)}
                            />
                       </div>
                       {model.SubChapter.map( (ch, idx) => 
                       (<div className="form-group" key={idx}>
                         <div className="d-flex align-items-center justify-content-between mb-2">
-                        <label >Sub Chapter {++idx}</label>
+                        <label >Sub Chapter {idx+1}</label>
                           <div>
                             <button className="btn btn-sm btn-primary" 
                                     type="button" 
@@ -156,7 +156,11 @@ class Form extends Component {
                           </div>
                         </div>
                         <div className="collapse"  id={ "subChapter"+ idx }>
-                      <textarea className="form-control" rows="3">{ch.name}</textarea>
+                        <textarea 
+                          className="form-control" 
+                          rows="3" 
+                          onChange={(ev) => this.onChangeModel(["SubChapter"][idx], ev.target.value)}
+                          defaultValue={ch.name}></textarea>
                         </div>
                       </div>
                       ))}

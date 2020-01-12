@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ButtonAction from '../../components/ButtonAction'
 import ContentHeader from '../../components/ContentHeader'
-import Autocomplete from 'react-autocomplete'
+// import Autocomplete from 'react-autocomplete'
 
 class AddCourses extends Component {
   constructor(props) {
@@ -61,9 +61,9 @@ class AddCourses extends Component {
                 <div className='col-md-6'>
                   <div className="card">
                     <div className="card-body pad">
-                      <Autocomplete
+                      {/* <Autocomplete
 
-                      />
+                      /> */}
 
                     </div>
                   </div>

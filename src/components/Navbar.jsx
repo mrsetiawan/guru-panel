@@ -2,6 +2,11 @@ import React from 'react';
 
 class Navbar extends React.Component {
 
+  onLogOut = () => {
+    localStorage.clear();
+    window.location = "/login";
+  }
+
   render() {
 
     return (<nav className="main-header navbar navbar-expand navbar-white navbar-light">
@@ -31,7 +36,7 @@ class Navbar extends React.Component {
             <a className="dropdown-item">
               <i className="fas fa-user mr-2"></i>Profile</a>
             <div className="dropdown-divider"></div>
-            <a className="dropdown-item">
+            <a href="#" onClick={this.onLogOut} className="dropdown-item">
               <i className="fas fa-sign-out-alt mr-2"></i>Logout
             </a>
           </div>

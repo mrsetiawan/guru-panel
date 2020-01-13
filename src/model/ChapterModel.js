@@ -2,7 +2,8 @@ export const ChapterModel = {
     id: "",
     name : "",
     curriculum : "",
-    subchapters : [],
-    questions : [],
-    quiz : ""
+    questions: [],
+    SubChapter : [],
+    quiz : "",
+    user: ""
   } 

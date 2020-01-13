@@ -15,11 +15,11 @@ const AddCity = lazy(() => import('./cities/AddCity'))
 const ListProvince = lazy(() => import('./province/List'))
 const AddProvince = lazy(() => import('./province/AddProvince'))
 const ListQuiz = lazy(() => import('./quizzes/List'))
-const AddQuiz = lazy(() => import('./quizzes/Add'))
+const FormQuiz = lazy(() => import('./quizzes/Form'))
 const ListClasses = lazy(() => import('./classes/List'))
 const FOrmClasses = lazy(() => import('./classes/FormClasses'))
 
-const FormQuiz = lazy(() => import('./quizzes/Form'))
+
 
 export default function HomePage() {
   const token = localStorage.getItem("jwt");

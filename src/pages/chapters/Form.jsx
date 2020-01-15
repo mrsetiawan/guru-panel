@@ -5,6 +5,7 @@ import QuestionController from '../../controllers/questions'
 import ChapterController from '../../controllers/chapters'
 import CurriculumController from '../../controllers/curriculums'
 import QuizController from '../../controllers/quizzes'
+import UsersPermissionsUser from '../../controllers/users-permissions-user'
 import { ChapterModel } from '../../model/ChapterModel'
 
 
@@ -13,10 +14,12 @@ class Form extends Component {
   questionController = new QuestionController();
   chapterController = new ChapterController();
   curriculumController = new CurriculumController();
+  usersPermissionsUser = new UsersPermissionsUser();
 
   state = {
       model: {...ChapterModel},
       curriculumOpts: [],
+      questionsOpts: [],
       quizzesOpts: [],
       userOpts: [],
       isEntry: true
@@ -48,21 +51,31 @@ class Form extends Component {
       this.setState({ quizzesOpts: res })
     })
     
+    this.usersPermissionsUser.getList()
+    .then(res => res.data)
+    .then(res => {
+      this.setState({ userOpts: res })
+    })
   }
 
   onChangeModel = (type, value) => {
-    this.setState({ model: {...this.state.model, type: value } })
+    this.setState({ model: {...this.state.model, [type]: value } })
+  }
+
+  onChangeSubChapterModel = (idx, value) =>
+  {
+    const subChapter = [...this.state.model.SubChapter]
+    subChapter[idx].name = value;
+    this.setState({ model: {...this.state.model, SubChapter: subChapter } })
   }
 
   onSaveForm = () => {
-    const chapters = this.state.model.chapters.map(x => x.id);
-    const courses = this.state.model.courses.map(x => x.id);
-    const classes = this.state.model.classes.map(x => x.id);
+    const questions = this.state.model.questions.map(x => x.value);
     if(this.state.isEntry){
-    this.quizController.onInsert({...this.state.model, chapters, courses, classes })
+    this.chapterController.onInsert({...this.state.model, questions})
         .then(() => alert('success'))
     }else{
-      this.quizController.onUpdate({...this.state.model, chapters, courses, classes })
+      this.chapterController.onUpdate({...this.state.model, questions})
         .then(() => alert('success'))
     }
   }
@@ -85,7 +98,7 @@ class Form extends Component {
   handleChangeQuestion = (question) => {
       this.setState({ model: { 
           ...this.state.model, 
-          questions: [ ...this.state.model.questions, {...question} ] 
+          questions: [...question] 
         } 
       })
   }
@@ -131,7 +144,7 @@ class Form extends Component {
                           id="inputName" 
                           className="form-control"
                           value={model.quizName}
-                          onChange={(ev) => this.onChangeModel(["name"], ev.target.value)}
+                          onChange={(ev) => this.onChangeModel("name", ev.target.value)}
                            />
                       </div>
                       {model.SubChapter.map( (ch, idx) => 
@@ -159,7 +172,7 @@ class Form extends Component {
                         <textarea 
                           className="form-control" 
                           rows="3" 
-                          onChange={(ev) => this.onChangeModel(["SubChapter"][idx], ev.target.value)}
+                          onChange={(ev) => this.onChangeSubChapterModel(idx, ev.target.value)}
                           defaultValue={ch.name}></textarea>
                         </div>
                       </div>
@@ -173,13 +186,16 @@ class Form extends Component {
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
                     <label >Curriculum</label>
-                      <select className="form-control">
+                      <select 
+                         onChange={(ev) => this.onChangeModel("curriculum", ev.target.value)}
+                        className="form-control">
                           {curriculumOpts.map(op => <option key={op.id} value={op.id}>{op.name}</option>)}
                       </select>
                     </div>
                   </div>
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
+                    <label>Questions</label>
                      <AsyncSelect 
                       isMulti
                       placeholder="Select questions"
@@ -194,7 +210,9 @@ class Form extends Component {
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
                     <label >Quiz</label>
-                      <select className="form-control">
+                      <select 
+                        onChange={(ev) => this.onChangeModel("quiz", ev.target.value)}
+                        className="form-control">
                           {quizzesOpts.map(op => <option key={op.id} value={op.id}>{op.quizName}</option>)}
                       </select>
                     </div>
@@ -202,7 +220,9 @@ class Form extends Component {
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
                     <label >User</label>
-                      <select className="form-control">
+                      <select 
+                         onChange={(ev) => this.onChangeModel("user", ev.target.value)}
+                        className="form-control">
                       </select>
                           {userOpts.map(op => <option key={op.id} value={op.id}>{op.name}</option>)}
                     </div>

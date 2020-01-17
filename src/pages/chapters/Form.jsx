@@ -34,8 +34,11 @@ class Form extends Component {
       this.chapterController.getById(paramId)
           .then(res => res.data)
           .then(res => {
+            res.curriculum = res.curriculum.id;
+            res.user = res.user.id;
+            res.quiz = res.quiz.id;
+            res.questions = res.questions.map(x => ({ label: x.question, value: x.id }))
             this.setState({ model: {...res} })
-            
           })
     }
 
@@ -121,7 +124,7 @@ class Form extends Component {
 
           <div className='row'>
             <div className='col-md-9'>
-              {isEntry ? <ContentHeader title="Create An Entry" /> : <ContentHeader title="Edit quiz" />}
+              {isEntry ? <ContentHeader title="Create An Entry" /> : <ContentHeader title="Edit chapter" />}
             </div>
             <div className='col-md-3 p-2 d-flex align-items-center justify-content-between'>
               <a href="#" onClick={this.onResetForm} className='btn btn-block' >Reset</a>
@@ -143,7 +146,7 @@ class Form extends Component {
                           type="text" 
                           id="inputName" 
                           className="form-control"
-                          value={model.quizName}
+                          value={model.name}
                           onChange={(ev) => this.onChangeModel("name", ev.target.value)}
                            />
                       </div>
@@ -187,8 +190,10 @@ class Form extends Component {
                     <div className="card-body pad d-flex flex-column">
                     <label >Curriculum</label>
                       <select 
+                         value={model.curriculum}
                          onChange={(ev) => this.onChangeModel("curriculum", ev.target.value)}
-                        className="form-control">
+                         className="form-control">
+                          <option>Select...</option>
                           {curriculumOpts.map(op => <option key={op.id} value={op.id}>{op.name}</option>)}
                       </select>
                     </div>
@@ -201,6 +206,7 @@ class Form extends Component {
                       placeholder="Select questions"
                       closeMenuOnSelect={false}
                       cacheOptions
+                      value={model.questions}
                       loadOptions={this.loadQuestion}
                       onChange={this.handleChangeQuestion}
                       />
@@ -210,9 +216,11 @@ class Form extends Component {
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
                     <label >Quiz</label>
-                      <select 
+                      <select
+                        value={model.quiz}
                         onChange={(ev) => this.onChangeModel("quiz", ev.target.value)}
                         className="form-control">
+                          <option>Select...</option>
                           {quizzesOpts.map(op => <option key={op.id} value={op.id}>{op.quizName}</option>)}
                       </select>
                     </div>
@@ -221,10 +229,12 @@ class Form extends Component {
                     <div className="card-body pad d-flex flex-column">
                     <label >User</label>
                       <select 
-                         onChange={(ev) => this.onChangeModel("user", ev.target.value)}
+                       value={model.user}
+                        onChange={(ev) => this.onChangeModel("user", ev.target.value)}
                         className="form-control">
-                      </select>
+                          <option>Select...</option>
                           {userOpts.map(op => <option key={op.id} value={op.id}>{op.name}</option>)}
+                      </select>
                     </div>
                   </div>
                   

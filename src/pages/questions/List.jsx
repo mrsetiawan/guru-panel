@@ -18,16 +18,13 @@ class List extends Component {
       .getList()
       .then(res => res.data)
       .then(questions => {
-        console.log("questions: ", questions);
-
         const tbody = questions.map((question, idx) => ({
           No: ++idx,
           id: question.id,
           "Question Type": question.questionType,
-          "Question Image": question.questionImage,
+          "Question Image": question.questionImage?.url,
           "Option A": question.optionA,
         }));
-
         this.setState({
           dataTable: { ...this.state.dataTable, tbody: tbody }
         });

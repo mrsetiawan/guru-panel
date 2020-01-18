@@ -22,7 +22,7 @@ const SideBar = () => {
           >
             <li className="nav-item">
               <Link to="/chapter" className="nav-link">
-                <i class="nav-icon far fa-edit"></i>
+                <i className="nav-icon far fa-edit"></i>
                 <p>Chapters</p>
               </Link>
             </li>

@@ -1,22 +1,54 @@
 import React, { Component } from "react";
-import ButtonAction from "../../components/ButtonAction";
+import MagicDropzone from "react-magic-dropzone";
 import ContentHeader from "../../components/ContentHeader";
+import QuestionsController from "../../controllers/questions";
+import CKEditor from "ckeditor4-react";
+import "./styles.css";
+import { QuestionsModel } from "../../model/questionsModel";
 
-class AddQuestion extends Component {
+class Form extends Component {
+  questionsController = new QuestionsController();
   constructor(props) {
     super(props);
     this.state = {
-      dataSelect: [
-        { id: 1, name: "select 1" },
-        { id: 2, name: "select 2" },
-        { id: 3, name: "select 3" },
-        { id: 4, name: "select 4" }
-      ]
+      value: "image/jpeg, image/png, .jpg, .jpeg, .png",
+      previews: []
     };
   }
 
+  configCKEditor = {
+    extraPlugins: "mathjax",
+    mathJaxLib:
+      "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML",
+    height: 320
+  };
+  
+  onDrop = (accepted, rejected, links) => {
+    accepted = accepted.map(v => v.preview);
+    var newPreviews = [...this.state.previews, ...accepted, ...links];
+    this.setState({
+      previews: newPreviews
+    });
+  };
+
+  onSaveForm = () => {
+    const questions = this.state.model?.questions?.map(x => x.value) || [];
+    const data = { ...this.state.model, questions };
+    if (this.state.isEntry) {
+      this.questionsController
+        .onInsert(data)
+        .then(() => alert("success"));
+    } else {
+      this.questionsController
+        .onUpdate(data)
+        .then(() => alert("success"));
+    }
+  };
+
+  onResetForm = () => {
+    this.setState({ model: { ...QuestionsModel } });
+  };
   render() {
-    const { dataSelect } = this.state;
     return (
       <div className="content-wrapper">
         <div className="col-md-12">
@@ -24,19 +56,24 @@ class AddQuestion extends Component {
             <div className="col-md-10">
               <ContentHeader title="Create An Entry" />
             </div>
-            <div className="col-md-2 p-2">
-              <div className="row p-2">
-                <div className="col-md-6">
-                  <ButtonAction
-                    title="Reset"
-                    class="btn btn-block btn-default"
-                  />
+            <div className="col-md-4 p-2">
+              <div className="row p-2 float-right">
+                <div className="col-md-6 p-2 ">
+                  <button
+                    onClick={this.onResetForm}
+                    className="btn btn-block btn-default"
+                  >
+                    Reset
+                  </button>
                 </div>
-                <div className="col-md-6">
-                  <ButtonAction
-                    title="Save"
-                    class="btn btn-block btn-success "
-                  />
+
+                <div className="col-md-6 p-2 ">
+                  <button
+                    onClick={this.onSaveForm}
+                    className="btn btn-block btn-success"
+                  >
+                    Save
+                  </button>
                 </div>
               </div>
             </div>
@@ -54,23 +91,36 @@ class AddQuestion extends Component {
                         <div className="col-md-6">
                           <div className="form-group">
                             <label for="inputName">Question Type</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
+                            <select className="form-control custom-select">
+                              <option selected="" disabled="">
+                                Choose here
+                              </option>
+                              <option>image</option>
+                              <option>text</option>
+                            </select>
                           </div>
                         </div>
                         <div className="col-md-6">
                           <div className="form-group">
                             <label for="inputName">Question Image</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
+                            <MagicDropzone
+                              className="Dropzone"
+                              accept={this.state.value}
+                              onDrop={this.onDrop}
+                            >
+                              <div className="Dropzone-content">
+                                {this.state.previews.length > 0
+                                  ? this.state.previews.map((v, i) => (
+                                      <img
+                                        key={i}
+                                        alt=""
+                                        className="Dropzone-img"
+                                        src={v}
+                                      />
+                                    ))
+                                  : "Drag & drop your file into this area or browse for a file to upload"}
+                              </div>
+                            </MagicDropzone>
                           </div>
                         </div>
                       </div>
@@ -161,12 +211,24 @@ class AddQuestion extends Component {
                         <div className="col-md-6">
                           <div className="form-group">
                             <label for="inputName">Image Explanation</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
+                            <MagicDropzone
+                              className="Dropzone"
+                              accept={this.state.value}
+                              onDrop={this.onDrop}
+                            >
+                              <div className="Dropzone-content">
+                                {this.state.previews.length > 0
+                                  ? this.state.previews.map((v, i) => (
+                                      <img
+                                        key={i}
+                                        alt=""
+                                        className="Dropzone-img"
+                                        src={v}
+                                      />
+                                    ))
+                                  : "Drag & drop your file into this area or browse for a file to upload"}
+                              </div>
+                            </MagicDropzone>
                           </div>
                         </div>
                       </div>
@@ -174,11 +236,13 @@ class AddQuestion extends Component {
                         <div className="col-md-12">
                           <div className="form-group">
                             <label for="inputName">Text Explanation</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
+
+                            <CKEditor
+                              onBeforeLoad={CKEDITOR =>
+                                (CKEDITOR.disableAutoInline = true)
+                              }
+                              config={this.configCKEditor}
+                              data=""
                             />
                           </div>
                         </div>
@@ -187,23 +251,47 @@ class AddQuestion extends Component {
                         <div className="col-md-6">
                           <div className="form-group">
                             <label for="inputName">Pdf Explanation</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
+                            <MagicDropzone
+                              className="Dropzone"
+                              accept={this.state.value}
+                              onDrop={this.onDrop}
+                            >
+                              <div className="Dropzone-content">
+                                {this.state.previews.length > 0
+                                  ? this.state.previews.map((v, i) => (
+                                      <img
+                                        key={i}
+                                        alt=""
+                                        className="Dropzone-img"
+                                        src={v}
+                                      />
+                                    ))
+                                  : "Drag & drop your file into this area or browse for a file to upload"}
+                              </div>
+                            </MagicDropzone>
                           </div>
                         </div>
                         <div className="col-md-6">
                           <div className="form-group">
                             <label for="inputName">Video Explanation</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
+                            <MagicDropzone
+                              className="Dropzone"
+                              accept={this.state.value}
+                              onDrop={this.onDrop}
+                            >
+                              <div className="Dropzone-content">
+                                {this.state.previews.length > 0
+                                  ? this.state.previews.map((v, i) => (
+                                      <img
+                                        key={i}
+                                        alt=""
+                                        className="Dropzone-img"
+                                        src={v}
+                                      />
+                                    ))
+                                  : "Drag & drop your file into this area or browse for a file to upload"}
+                              </div>
+                            </MagicDropzone>
                           </div>
                         </div>
                       </div>
@@ -222,12 +310,24 @@ class AddQuestion extends Component {
                         <div className="col-md-6">
                           <div className="form-group">
                             <label for="inputName">Question Video</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
-                            />
+                            <MagicDropzone
+                              className="Dropzone"
+                              accept={this.state.value}
+                              onDrop={this.onDrop}
+                            >
+                              <div className="Dropzone-content">
+                                {this.state.previews.length > 0
+                                  ? this.state.previews.map((v, i) => (
+                                      <img
+                                        key={i}
+                                        alt=""
+                                        className="Dropzone-img"
+                                        src={v}
+                                      />
+                                    ))
+                                  : "Drag & drop your file into this area or browse for a file to upload"}
+                              </div>
+                            </MagicDropzone>
                           </div>
                         </div>
                       </div>
@@ -248,11 +348,12 @@ class AddQuestion extends Component {
                         <div className="col-md-12">
                           <div className="form-group">
                             <label for="inputName">Question Detail</label>
-                            <input
-                              type="text"
-                              id="inputName"
-                              className="form-control"
-                              name="name"
+                            <CKEditor
+                              onBeforeLoad={CKEDITOR =>
+                                (CKEDITOR.disableAutoInline = true)
+                              }
+                              config={this.configCKEditor}
+                              data=""
                             />
                           </div>
                         </div>
@@ -333,27 +434,9 @@ class AddQuestion extends Component {
                           <option>Success</option>
                         </select>
                       </div>
-
                       <div class="form-group">
                         <label for="inputStatus">Quizzess (0)</label>
                         <select className="form-control ">
-                          <option>Alabama</option>
-                          <option>Alaska</option>
-                          <option>California</option>
-                          <option>Delaware</option>
-                          <option>Tennessee</option>
-                          <option>Texas</option>
-                          <option>Washington</option>
-                        </select>
-                      </div>
-
-                      <div class="form-group">
-                        <label>Multiple</label>
-                        <select
-                          className="select2"
-                          multiple="multiple"
-                          data-placeholder="Select a State"
-                        >
                           <option>Alabama</option>
                           <option>Alaska</option>
                           <option>California</option>
@@ -375,4 +458,4 @@ class AddQuestion extends Component {
   }
 }
 
-export default AddQuestion;
+export default Form;

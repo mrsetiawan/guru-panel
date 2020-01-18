@@ -19,10 +19,10 @@ const FormQuiz = lazy(() => import("./quizzes/Form"));
 const ListClasses = lazy(() => import("./classes/List"));
 const FOrmClasses = lazy(() => import("./classes/FormClasses"));
 const ListQuestions = lazy(() => import("./questions/List"));
-const AddQuestion = lazy(() => import("./questions/AddQuestion"));
+const AddQuestion = lazy(() => import("./questions/Form"));
 const ListQuestionsources = lazy(() => import("./questionSources/List"));
 const AddQuestionsource = lazy(() =>
-  import("./questionSources/AddQuestionsource")
+  import("./questionSources/Form")
 );
 
 export default function HomePage() {

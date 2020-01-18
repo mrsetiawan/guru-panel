@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import moment from 'moment';
 import Table from "../../components/Table";
 import ButtonAction from "../../components/ButtonAction";
 import ContentHeader from "../../components/ContentHeader";
@@ -19,14 +20,14 @@ class List extends Component {
       .getList()
       .then(res => res.data)
       .then(questionsources => {
-        console.log("questionsources: ", questionsources);
-
         const tbody = questionsources.map((questionsource, idx) => ({
           No: ++idx,
           id: questionsource.id,
           "Source Info": questionsource.sourceInfo,
           Year: questionsource.year,
-          "Created At": questionsource.createdAt
+          "Created At": moment(new Date(questionsource.createdAt)).format(
+            "D MMMM Y"
+          )
         }));
 
         this.setState({

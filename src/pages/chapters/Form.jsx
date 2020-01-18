@@ -7,9 +7,11 @@ import CurriculumController from '../../controllers/curriculums'
 import QuizController from '../../controllers/quizzes'
 import UsersPermissionsUser from '../../controllers/users-permissions-user'
 import { ChapterModel } from '../../model/ChapterModel'
-
+import 'toastr/build/toastr.min.css'
+import toastr from 'toastr'
 
 class Form extends Component {
+  toastr = toastr;
   quizController = new QuizController()
   questionController = new QuestionController();
   chapterController = new ChapterController();
@@ -73,13 +75,17 @@ class Form extends Component {
   }
 
   onSaveForm = () => {
+    
+
     const questions = this.state.model.questions.map(x => x.value);
     if(this.state.isEntry){
     this.chapterController.onInsert({...this.state.model, questions})
-        .then(() => alert('success'))
+        .then(() => this.toastr.success('Successfully saved'))
+        .catch(e => this.toastr.error(e.message))
     }else{
       this.chapterController.onUpdate({...this.state.model, questions})
-        .then(() => alert('success'))
+          .then(() => this.toastr.success('Successfully saved'))
+          .catch(e => this.toastr.error(e.message))
     }
   }
 
@@ -99,6 +105,7 @@ class Form extends Component {
   }
  
   handleChangeQuestion = (question) => {
+    if(question === null){ question = [] }
       this.setState({ model: { 
           ...this.state.model, 
           questions: [...question] 
@@ -124,16 +131,16 @@ class Form extends Component {
 
           <div className='row'>
             <div className='col-md-9'>
-              {isEntry ? <ContentHeader title="Create An Entry" /> : <ContentHeader title="Edit chapter" />}
+              {isEntry ? <ContentHeader title="Create An Entry Chapter" /> : <ContentHeader title="Edit Chapter" />}
             </div>
             <div className='col-md-3 p-2 d-flex align-items-center justify-content-between'>
-              <a href="#" onClick={this.onResetForm} className='btn btn-block' >Reset</a>
-              <a href="#" onClick={this.onSaveForm} className='btn btn-block btn-success' >Save</a>
+              <button  onClick={this.onResetForm} className='btn btn-block' >Reset</button>
+              <button  onClick={this.onSaveForm} className='btn btn-block btn-success' >Save</button>
             </div>
           </div>
         </div>
-
         <div className="content">
+
           <div className="row">
             <div className="col-md-12">
               <div className='row'>

@@ -12,7 +12,7 @@ class Navbar extends React.Component {
     return (<nav className="main-header navbar navbar-expand navbar-white navbar-light">
       <ul className="navbar-nav">
         <li className="nav-item">
-          <a href="#" className="nav-link" data-widget="pushmenu"><i className="fas fa-bars"></i></a>
+          <button className="nav-link btn" data-widget="pushmenu"><i className="fas fa-bars"></i></button>
         </li>
       </ul>
 
@@ -26,8 +26,8 @@ class Navbar extends React.Component {
           </div>
         </div>
       </form>
-
       <ul className="navbar-nav ml-auto">
+
         <li className="nav-item dropdown">
           <a className="nav-link" data-toggle="dropdown" href="#">
             <i className="far fa-user-circle"></i>

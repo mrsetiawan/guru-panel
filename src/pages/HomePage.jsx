@@ -49,7 +49,6 @@ export default function HomePage() {
         <Route exact path='/quiz' component={ListQuiz} />
         <Route exact path='/classes' component={ListClasses} />
         <Route exact path='/classes/entry' component={FOrmClasses} />
-        {/* <Route path='/chapter/:id' component={UpdateChapters} /> */}
         <Route path="/quiz/entry" component={FormQuiz} />
         <Route path="/quiz/:id" component={FormQuiz} />
         <Route exact path="/questions" component={ListQuestions} />

@@ -35,19 +35,20 @@ export default function HomePage() {
       <Navbar />
       <Sidebar />
       <Switch>
-        <Route exact path="/" component={DashboardPage} />
-        <Route exact path="/chapter" component={ListChapters} />
-        <Route path="/chapter/entry" component={FormChapter} />
-        <Route exact path="/course" component={ListCourses} />
-        <Route path="/course/entry" component={AddCourses} />
-        <Route exact path="/cities" component={ListCities} />
-        <Route path="/cities/entry" component={AddCity} />
-        <Route exact path="/province" component={ListProvince} />
-        <Route path="/province/entry" component={AddProvince} />
-        <Route exact path="/quiz" component={ListQuiz} />
-        <Route exact path="/classes" component={ListClasses} />
-        <Route exact path="/classes/entry" component={FOrmClasses} />
-        {/* <Route path='/chapter/:id' component={UpdateChapters} /> */}
+
+        <Route exact path='/' component={DashboardPage} />
+        <Route exact path='/chapter' component={ListChapters} />
+        <Route path='/chapter/entry' component={FormChapter} />
+        <Route path='/chapter/:id' component={FormChapter} />
+        <Route exact path='/course' component={ListCourses} />
+        <Route path='/course/entry' component={AddCourses} />
+        <Route exact path='/cities' component={ListCities} />
+        <Route path='/cities/entry' component={AddCity} />
+        <Route exact path='/province' component={ListProvince} />
+        <Route path='/province/entry' component={AddProvince} />
+        <Route exact path='/quiz' component={ListQuiz} />
+        <Route exact path='/classes' component={ListClasses} />
+        <Route exact path='/classes/entry' component={FOrmClasses} />
         <Route path="/quiz/entry" component={FormQuiz} />
         <Route path="/quiz/:id" component={FormQuiz} />
         <Route exact path="/questions" component={ListQuestions} />

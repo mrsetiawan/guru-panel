@@ -5,18 +5,23 @@ import QuestionController from '../../controllers/questions'
 import ChapterController from '../../controllers/chapters'
 import CurriculumController from '../../controllers/curriculums'
 import QuizController from '../../controllers/quizzes'
+import UsersPermissionsUser from '../../controllers/users-permissions-user'
 import { ChapterModel } from '../../model/ChapterModel'
-
+import 'toastr/build/toastr.min.css'
+import toastr from 'toastr'
 
 class Form extends Component {
+  toastr = toastr;
   quizController = new QuizController()
   questionController = new QuestionController();
   chapterController = new ChapterController();
   curriculumController = new CurriculumController();
+  usersPermissionsUser = new UsersPermissionsUser();
 
   state = {
       model: {...ChapterModel},
       curriculumOpts: [],
+      questionsOpts: [],
       quizzesOpts: [],
       userOpts: [],
       isEntry: true
@@ -31,8 +36,11 @@ class Form extends Component {
       this.chapterController.getById(paramId)
           .then(res => res.data)
           .then(res => {
+            res.curriculum = res.curriculum.id;
+            res.user = res.user.id;
+            res.quiz = res.quiz.id;
+            res.questions = res.questions.map(x => ({ label: x.question, value: x.id }))
             this.setState({ model: {...res} })
-            
           })
     }
 
@@ -48,22 +56,36 @@ class Form extends Component {
       this.setState({ quizzesOpts: res })
     })
     
+    this.usersPermissionsUser.getList()
+    .then(res => res.data)
+    .then(res => {
+      this.setState({ userOpts: res })
+    })
   }
 
   onChangeModel = (type, value) => {
-    this.setState({ model: {...this.state.model, type: value } })
+    this.setState({ model: {...this.state.model, [type]: value } })
+  }
+
+  onChangeSubChapterModel = (idx, value) =>
+  {
+    const subChapter = [...this.state.model.SubChapter]
+    subChapter[idx].name = value;
+    this.setState({ model: {...this.state.model, SubChapter: subChapter } })
   }
 
   onSaveForm = () => {
-    const chapters = this.state.model.chapters.map(x => x.id);
-    const courses = this.state.model.courses.map(x => x.id);
-    const classes = this.state.model.classes.map(x => x.id);
+    
+
+    const questions = this.state.model.questions.map(x => x.value);
     if(this.state.isEntry){
-    this.quizController.onInsert({...this.state.model, chapters, courses, classes })
-        .then(() => alert('success'))
+    this.chapterController.onInsert({...this.state.model, questions})
+        .then(() => this.toastr.success('Successfully saved'))
+        .catch(e => this.toastr.error(e.message))
     }else{
-      this.quizController.onUpdate({...this.state.model, chapters, courses, classes })
-        .then(() => alert('success'))
+      this.chapterController.onUpdate({...this.state.model, questions})
+          .then(() => this.toastr.success('Successfully saved'))
+          .catch(e => this.toastr.error(e.message))
     }
   }
 
@@ -83,9 +105,10 @@ class Form extends Component {
   }
  
   handleChangeQuestion = (question) => {
+    if(question === null){ question = [] }
       this.setState({ model: { 
           ...this.state.model, 
-          questions: [ ...this.state.model.questions, {...question} ] 
+          questions: [...question] 
         } 
       })
   }
@@ -108,16 +131,16 @@ class Form extends Component {
 
           <div className='row'>
             <div className='col-md-9'>
-              {isEntry ? <ContentHeader title="Create An Entry" /> : <ContentHeader title="Edit quiz" />}
+              {isEntry ? <ContentHeader title="Create An Entry Chapter" /> : <ContentHeader title="Edit Chapter" />}
             </div>
             <div className='col-md-3 p-2 d-flex align-items-center justify-content-between'>
-              <a href="#" onClick={this.onResetForm} className='btn btn-block' >Reset</a>
-              <a href="#" onClick={this.onSaveForm} className='btn btn-block btn-success' >Save</a>
+              <button  onClick={this.onResetForm} className='btn btn-block' >Reset</button>
+              <button  onClick={this.onSaveForm} className='btn btn-block btn-success' >Save</button>
             </div>
           </div>
         </div>
-
         <div className="content">
+
           <div className="row">
             <div className="col-md-12">
               <div className='row'>
@@ -130,8 +153,8 @@ class Form extends Component {
                           type="text" 
                           id="inputName" 
                           className="form-control"
-                          value={model.quizName}
-                          onChange={(ev) => this.onChangeModel(["name"], ev.target.value)}
+                          value={model.name}
+                          onChange={(ev) => this.onChangeModel("name", ev.target.value)}
                            />
                       </div>
                       {model.SubChapter.map( (ch, idx) => 
@@ -159,7 +182,7 @@ class Form extends Component {
                         <textarea 
                           className="form-control" 
                           rows="3" 
-                          onChange={(ev) => this.onChangeModel(["SubChapter"][idx], ev.target.value)}
+                          onChange={(ev) => this.onChangeSubChapterModel(idx, ev.target.value)}
                           defaultValue={ch.name}></textarea>
                         </div>
                       </div>
@@ -173,18 +196,24 @@ class Form extends Component {
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
                     <label >Curriculum</label>
-                      <select className="form-control">
+                      <select 
+                         value={model.curriculum}
+                         onChange={(ev) => this.onChangeModel("curriculum", ev.target.value)}
+                         className="form-control">
+                          <option>Select...</option>
                           {curriculumOpts.map(op => <option key={op.id} value={op.id}>{op.name}</option>)}
                       </select>
                     </div>
                   </div>
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
+                    <label>Questions</label>
                      <AsyncSelect 
                       isMulti
                       placeholder="Select questions"
                       closeMenuOnSelect={false}
                       cacheOptions
+                      value={model.questions}
                       loadOptions={this.loadQuestion}
                       onChange={this.handleChangeQuestion}
                       />
@@ -194,7 +223,11 @@ class Form extends Component {
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
                     <label >Quiz</label>
-                      <select className="form-control">
+                      <select
+                        value={model.quiz}
+                        onChange={(ev) => this.onChangeModel("quiz", ev.target.value)}
+                        className="form-control">
+                          <option>Select...</option>
                           {quizzesOpts.map(op => <option key={op.id} value={op.id}>{op.quizName}</option>)}
                       </select>
                     </div>
@@ -202,9 +235,13 @@ class Form extends Component {
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
                     <label >User</label>
-                      <select className="form-control">
-                      </select>
+                      <select 
+                       value={model.user}
+                        onChange={(ev) => this.onChangeModel("user", ev.target.value)}
+                        className="form-control">
+                          <option>Select...</option>
                           {userOpts.map(op => <option key={op.id} value={op.id}>{op.name}</option>)}
+                      </select>
                     </div>
                   </div>
                   

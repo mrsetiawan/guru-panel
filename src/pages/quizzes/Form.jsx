@@ -7,8 +7,12 @@ import ClassController from '../../controllers/classes'
 import ChapterController from '../../controllers/chapters'
 import CourseController from '../../controllers/courses'
 import { QuizModel } from '../../model/QuizModel'
+import 'toastr/build/toastr.min.css'
+import toastr from 'toastr'
 
 class Form extends Component {
+
+  toastr = toastr;
   quizController = new QuizController();
   classController = new ClassController();
   chapterController = new ChapterController();
@@ -35,6 +39,10 @@ class Form extends Component {
       this.quizController.getById(paramId)
           .then(res => res.data)
           .then(res => {
+            res.chapters = res.chapters.map(x => ({ label: x.name, value: x.id }))
+            res.questions = res.questions.map(x => ({ label: x.question, value: x.id }))
+            res.classes = res.classes.map(x => ({ label: x.className, value: x.id }))
+            res.courses = res.courses.map(x => ({ label: x.name, value: x.id }))
             this.setState({ model: {...res} })
             
           })
@@ -50,12 +58,15 @@ class Form extends Component {
     const chapters = this.state.model.chapters.map(x => x.value);
     const courses = this.state.model.courses.map(x => x.value);
     const classes = this.state.model.classes.map(x => x.value);
+
     if(this.state.isEntry){
-    this.quizController.onInsert({...this.state.model, chapters, courses, classes })
-        .then(() => alert('success'))
+      this.quizController.onInsert({...this.state.model, chapters, courses, classes })
+          .then(() => this.toastr.success('Successfully saved'))
+          .catch(e => this.toastr.error(e.message))
     }else{
       this.quizController.onUpdate({...this.state.model, chapters, courses, classes })
-        .then(() => alert('success'))
+          .then(() => this.toastr.success('Successfully saved'))
+          .catch(e => this.toastr.error(e.message))
     }
   }
 
@@ -78,6 +89,7 @@ class Form extends Component {
   }
  
   handleChangeChapter = (chapters) => {
+      if(chapters === null){ chapters = [] }
       this.setState({ model: { 
           ...this.state.model, 
           chapters: [ ...chapters ] 
@@ -101,6 +113,7 @@ class Form extends Component {
   }
  
   handleChangeClass = (cls) => {
+    if(cls === null){ cls = [] }
       this.setState({ model: { 
           ...this.state.model, 
           classes: [ ...cls ] 
@@ -115,7 +128,7 @@ class Form extends Component {
       .getList({ _q: inputValue })
       .then(res => res.data)
       .then(res => {
-        const courses = res.map(x => ({ value: x.id, label: x.className }))
+        const courses = res.map(x => ({ value: x.id, label: x.name }))
         callback(courses)
       })
     }else{
@@ -124,6 +137,7 @@ class Form extends Component {
   }
  
   handleChangeCourse = (cls) => {
+    if(cls === null){ cls = [] }
       this.setState({ model: { 
           ...this.state.model, 
           courses: [ ...cls ] 
@@ -144,14 +158,14 @@ class Form extends Component {
               {isEntry ? <ContentHeader title="Create An Entry" /> : <ContentHeader title="Edit quiz" />}
             </div>
             <div className='col-md-3 p-2 d-flex align-items-center justify-content-between'>
-              <a href="#" onClick={this.onResetForm} className='btn btn-block' >Reset</a>
-              <a href="#" onClick={this.onSaveForm} className='btn btn-block btn-success' >Save</a>
+              <button  onClick={this.onResetForm} className='btn btn-block' >Reset</button>
+              <button  onClick={this.onSaveForm} className='btn btn-block btn-success' >Save</button>
             </div>
           </div>
         </div>
-
         <div className="content">
           <div className="row">
+
             <div className="col-md-12">
               <div className='row'>
                 <div className='col-md-8'>
@@ -219,6 +233,7 @@ class Form extends Component {
                       closeMenuOnSelect={false}
                       isMulti
                       cacheOptions
+                      value={model.chapters}
                       loadOptions={this.loadChapter}
                       onChange={this.handleChangeChapter}/>
                       
@@ -231,8 +246,8 @@ class Form extends Component {
                       closeMenuOnSelect={false}
                       isMulti
                       cacheOptions
+                      value={model.classes}
                       loadOptions={this.loadClass}
-                      defaultOptions
                       onChange={this.handleChangeClass}/>
                       {model.classes.map((cls, idx) => 
                       <div key={idx} className="d-flex justify-content-between align-items-center mt-1 shadow-sm p-1">
@@ -249,8 +264,8 @@ class Form extends Component {
                       closeMenuOnSelect={false}
                       isMulti
                       cacheOptions
+                      value={model.courses}
                       loadOptions={this.loadCourse}
-                      defaultOptions
                       onChange={this.handleCourseClass}/>
                       {model.courses.map((cls, idx) => 
                       <div key={idx} className="d-flex justify-content-between align-items-center mt-1 shadow-sm p-1">

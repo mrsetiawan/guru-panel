@@ -94,6 +94,7 @@ class Form extends Component {
   }
 
   loadQuestion = (inputValue, callback) => {
+    console.log(callback)
     this.questionController
       .getList({ _q: inputValue })
       .then(res => res.data)

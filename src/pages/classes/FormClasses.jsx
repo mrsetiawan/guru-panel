@@ -3,14 +3,25 @@ import ContentHeader from '../../components/ContentHeader'
 import CKEditor from 'ckeditor4-react'
 import { ClassModel } from '../../model/ClassModel'
 import ClassesController from '../../controllers/classes'
+import QuestionController from '../../controllers/questions'
+import AsyncSelect from 'react-select/async'
+import GradeController from '../../controllers/grades'
+import StudentController from '../../controllers/student'
 
 export class FormClasses extends Component {
+
+  gradeController = new GradeController();
+  questionController = new QuestionController();
+  classesController = new ClassesController();
+  studentController = new StudentController();
 
   constructor(props) {
     super(props)
     this.state = {
       isEntry: true,
       model: { ...ClassModel },
+      questionsOpts: [],
+      gradeOptions: []
     }
   }
 
@@ -21,21 +32,44 @@ export class FormClasses extends Component {
   }
 
   componentDidMount() {
-    console.log(this.state.model)
+    this.gradeController.getList()
+      .then(res => res.data)
+      .then(res => this.setState({ gradeOptions: res }))
+
+    console.log(this.studentController)
   }
 
-  onChangeModel = (e) => {
+  // onChangeModel = (e) => {
+  //   this.setState({
+  //     model: { ...this.state.model, [e.target.name]: e.target.value }
+  //   })
+  // }
+
+  loadQuestions = (inputValue, callback) => {
+    this.questionController
+    .getList({ _q:inputValue })
+    .then(res => res.data)
+    .then(res => {
+      const quest = res.map(x => ({value:x._id, label:x.question}))
+      callback([...quest])
+    })
+  }
+
+  handleChangeQuestions = (quest) => {
+    if(quest == null) { quest = [] }
     this.setState({
-      model: { ...this.state.model, [e.target.name]: e.target.value }
+      model: {...this.state.model,questions: [...quest]}
     })
 
-    console.log(this.state.model)
+  }
+
+  onChangeModel = (type, value) => {
+    this.setState({ model: {...this.state.model, [type]: value } })
   }
 
   render() {
 
-    const { isEntry } = this.state
-
+    const { isEntry, model, gradeOptions } = this.state
     return (
       <div className="content-wrapper">
         <div className='col-md-12'>
@@ -91,11 +125,33 @@ export class FormClasses extends Component {
                 <div className='col-md-4'>
                   <div className="card">
                     <div className="card-body pad d-flex flex-column">
-                      <div className="form-group">
-                        
-                      </div>
+                      <label >Grade</label>
+                      <select
+                        value={model.grades}
+                        onChange={(ev) => this.onChangeModel("grades", ev.target.value)}
+                        className="form-control">
+                        <option>Select...</option>
+                        {gradeOptions.map(val => <option key={val._id} value={val.id}>{val.name}</option>)}
+                      </select>
                     </div>
                   </div>
+
+                  <div className="card">
+                    <div className="card-body pad d-flex flex-column">
+                    <label>Questions</label>
+                     <AsyncSelect 
+                      isMulti
+                      placeholder="Select questions"
+                      closeMenuOnSelect={false}
+                      cacheOptions
+                      value={model.questions}
+                      loadOptions={this.loadQuestions}
+                      onChange={this.handleChangeQuestions}
+                      />
+                     
+                    </div>
+                  </div>
+                  
                 </div>
               </div>
             </div>
